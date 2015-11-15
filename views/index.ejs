@@ -62,11 +62,12 @@
     			<div id="enchant-stage"></div>
     		</div>
     	</div>
-    	<div class="col-md-6">
-    		<% contributions.forEach(function(contribution){ %>
-    			<p><%= contribution.x %>,<%= contribution.y %>,<%= contribution.color %></p>
-    		<% }) %>
+
+
+    	<div class="contributions" style="display:none;">
+    		<%= contributions %>
     	</div>
+
     </div>
 </div>
 </body>

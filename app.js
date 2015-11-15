@@ -16,6 +16,7 @@ function contribution(x, y, color, count, date){
   this.y = y;
   this.count = count;
   this.color = color;
+  this.date = date;
 }
 
 
@@ -52,7 +53,7 @@ var getGitHubData = function(name, callback) {
 					callback();
 				}, function(err) {
 					if( err ) console.log(err);
-					console.log(contributions);
+					// console.log(contributions);
 					callback(contributions);
 				});
 
@@ -72,7 +73,7 @@ var getGitHubData = function(name, callback) {
 app.get('/', function(req, res) {
 
 	getGitHubData('hyde2able', function(contributions) {
-		res.render('index', {contributions: contributions});
+		res.render('index', {contributions: JSON.stringify(contributions) });
 	});
 
 	return;
@@ -83,26 +84,6 @@ app.get('/', function(req, res) {
 	}
 
     var name = req.query.username;
-
-
-	promise.then(function(results) {
-		var returning = []
-		,	validNames = [];
-
-		names.forEach(function(name, i) {
-			if (results[i] != 'invalid') {
-				returning.push({ key: name, value: results[i].value });
-				validNames.push(name);
-			}
-		});
-
-		res.render('index', {
-			calendarData: returning,
-			names: validNames
-		});
-	}).fail(function() {
-		res.render('index');
-	});
 
 });
 

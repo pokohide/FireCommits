@@ -47,9 +47,9 @@ input {
 
 
 .game{
-    width: 400px;  /* enchant.jsのGameオブジェクトの作成時に設定したゲーム画面サイズ */
-    height: 500px;
-    margin:10px auto;
+    width: 800px;  /* enchant.jsのGameオブジェクトの作成時に設定したゲーム画面サイズ */
+    height: 600px;
+    margin: 10px auto;
     border: 1px solid #000000;  /* ゲーム画面を囲う線（任意） */
 }
 
