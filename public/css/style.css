@@ -1,0 +1,70 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  font-family: 'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+}
+
+table {
+  margin: 1em 0;
+}
+td {
+  height: 7px;
+  width: 7px;
+  background: rgba(255, 255, 255, 0.25);
+}
+h1 {
+  font-size: 2em;
+  line-height: 1em;
+  margin-bottom: 0;
+}
+h2 {
+  font-size: 1.7em;
+  margin-top: .25em;
+  line-height: 1.25em;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: .5em;
+  padding-bottom: .5em;
+}
+input {
+	border: 1px solid black;
+}
+
+#enchant-stage {
+	// margin: 0 auto;
+}
+
+.container {
+  width: 80%;
+  height: 600px;
+  margin: 0 auto;
+  margin-top: 100px;
+  border: 1px solid black;
+}
+
+
+.game{
+    width: 400px;  /* enchant.jsのGameオブジェクトの作成時に設定したゲーム画面サイズ */
+    height: 500px;
+    margin:10px auto;
+    border: 1px solid #000000;  /* ゲーム画面を囲う線（任意） */
+}
+
+.status0 {
+  background: #eee;
+}
+.status1 {
+  background: #d6e685;
+}
+.status2 {
+  background: #8cc665;
+}
+.status3 {
+  background: #44a340;
+}
+.status4 {
+  background: #1e6823;
+}

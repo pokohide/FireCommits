@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="githubのアカウントを使用したシューティングゲーム">
+
+    <meta name = "apple-mobile-web-app-copable" content = "yes">
+    <meta name = "apple-mobile-web-app-status-bar-style" content = "black-translucent">
+    <meta name="copyright" content="&copy; hyde2able">
+    <meta name="author" content="hyde2able">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <title>FireCommits</title>
+    
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+    <!--&#91;if lt IE 9&#93;>
+    <script src="//cdn.jsdelivr.net/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+    <!&#91;endif&#93;-->
+
+    <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/enchant.js"></script> 
+    <script type="text/javascript" src="js/game.js"></script>
+</head>
+
+
+<body>
+<div class="container">
+ 	<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <h3 class="navbar-brandmasthead-brand">FireCommits</h3>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a class="page-scroll" href="#about">About</a></li>
+                    <li><a class="page-scroll" href="#services">Services</a></li>
+                    <li><a class="page-scroll" href="#portfolio">Portfolio</a></li>
+                    <li><a class="page-scroll" href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <div class="row">
+    	<div class="col-md-offset-3 col-md-6">
+    		<div class="game">
+    			<div id="enchant-stage"></div>
+    		</div>
+    	</div>
+    	<div class="col-md-6">
+    		<% contributions.forEach(function(contribution){ %>
+    			<p><%= contribution.x %>,<%= contribution.y %>,<%= contribution.color %></p>
+    		<% }) %>
+    	</div>
+    </div>
+</div>
+</body>
+</html>
+
