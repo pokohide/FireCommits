@@ -6,6 +6,10 @@ var ScreenWidth = 700
 ,   ScreenCenterX = ScreenWidth / 2
 ,   ScreenCenterY = ScreenHeight / 2;
 
+function rand(num){
+    return Math.floor(Math.random() * num);
+}
+
 /* 敵機を生成。 */
 var Enemy = enchant.Class.create(enchant.Sprite, {
     initialize: function(x, y, color) {
@@ -16,6 +20,7 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
         surface.context.fillStyle = color;
         surface.context.fillRect(0, 0, 11, 11);
         this.image = surface;
+        // this.life = LifeColor[color];    // 色によって定められたライフ値を持つ。
 
         this.x = x; this.y = y; this.frame = 3; this.time = 0;
 
@@ -27,11 +32,15 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
         //     this.y += this.moveSpeed * Math.sin(this.direction);
         // };
         this.addEventListener('enterframe', function() {
+            if( rand(100) == 0 ){   // 1/100で敵が打つ
+                var s = new EnemyShoot(this.x, this.y);
+            }
             //this.move();
+            // this.opacity = Math.random() * 100;
             if( this.y > ScreenHeight || this.x > ScreenWidth || this.x < -this.width || this.y < -this.height) {
                 this.remove()   // 画面外に出たら自爆する
             } else if (this.time++ % 10 == 0) {
-                var s = new EnemyShoot(this.x, this.y); // 10フレームに一回打つ
+                // var s = new EnemyShoot(this.x, this.y); // 10フレームに一回打つ
             }
 
         });
@@ -46,19 +55,18 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
 /* 自機を生成。 */
 var Player = enchant.Class.create(enchant.Sprite, {
     initialize: function(x,y) {
-        enchant.Sprite.call(this, 40, 16);      // 自機をスプライトとして定義
+        enchant.Sprite.call(this, 50, 20);      // 自機をスプライトとして定義
         this.image = game.assets['../images/player.png'];     // 画像を読み込む
         this.x = x; this.y = y; this.frame = 0;
 
         var s = new PlayerShoot(x, y);
         this.addEventListener('enterframe', function(){
-            if(/*game.touched &&*/ game.frame % 3 == 0){ 
+            if(game.touched && game.frame % 10 == 0){ 
                 //console.log('打たれたはず');
-                var s = new PlayerShoot(this.x, this.y); 
+                var s = new PlayerShoot(player.x, player.y); 
                 //console.log(s);
             }
         });
-
         game.rootScene.addChild(this);
     }
 });
@@ -66,17 +74,23 @@ var Player = enchant.Class.create(enchant.Sprite, {
 /* 弾を定義 */
 var Shoot = enchant.Class.create(enchant.Sprite, {
     initialize: function(x, y, direction) {
-        enchant.Sprite.call(this, 16, 16);
-        this.image = game.assets['../images/shot.png'];
+        enchant.Sprite.call(this, 10, 10);
+        /* 自機と敵機で弾を変える */
+        if( direction > 0) {
+            this.image = game.assets['../images/shot.png'];
+        } else {
+            this.image = game.assets['../images/enemyshot.png'];
+        }
         this.x = x; this.y = y; this.frame = 1;
-        this.direction = direction; this.moveSpeed = 3;
+        this.direction = direction; this.moveSpeed = 10;
         this.addEventListener('enterframe', function() {    // 弾をまいフレーム動かす
-            this.x += this.moveSpeed * Math.cos(this.direction);
-            this.y += this.moveSpeed * Math.sin(this.direction);
+            this.x += this.moveSpeed * Math.sin(this.direction);
+            this.y += this.moveSpeed * Math.cos(this.direction);
             if(this.y > ScreenHeight || this.x > ScreenWidth || this.x < -this.width || this.y < -this.height){
                 this.remove();
             }
         });
+        game.rootScene.addChild(this);
     },
     remove: function(){ game.rootScene.removeChild(this); delete this; }
 });
@@ -90,6 +104,7 @@ var PlayerShoot = enchant.Class.create(Shoot, {
                 if(enemies[i].intersect(this)) {     // 敵に当たったら、敵を消してスコアを足す
                     /* ここを当たってから当たった相手のライフを一つ減らして色を変えて、0だったら破壊するようにする */
                     this.remove();
+                    // var blast = new Blast(enemies[i].x, enemies[i].y);
                     // enemies[i].remove();
                     // game.score += 100;
                 }
@@ -108,6 +123,27 @@ var EnemyShoot = enchant.Class.create(Shoot, {
     }
 });
 
+/* 破壊エフェクト */
+var Blast = enchant.Class.create(enchant.Sprite,{
+    initialize: function(x, y){
+        enchant.Sprite.call(this, 16, 16);
+        this.x        = x;
+        this.y        = y;
+        this.image    = game.assets[BLAST];
+        this.time     = 0;
+        this.duration = 20;
+        this.frame    = 0;
+        game.rootScene.addChild(this);
+    },
+    onenterframe:function(){
+        this.time++;
+        this.frame = Math.floor(this.time/this.duration *5);
+        if(this.time == this.duration) this.remove();
+    },
+    remove: function(){
+        game.rootScene.removeChild(this);
+    }
+});
 
 
 /*
@@ -119,9 +155,10 @@ window.onload = function() {
 
     game = new Game(ScreenWidth, ScreenHeight);
     /* game設定 */
-    game.preload(['../images/player.png', '../images/shot.png']);
+    game.preload(['../images/player.png', '../images/shot.png','../images/enemy.png', '../images/enemyshot.png']);
     game.score = 0;
     game.fps = 24;
+    game.touched = false;
 
 
 
@@ -142,10 +179,13 @@ window.onload = function() {
         game.addEventListener('enterframe', function() {
             if(game.input.right) {
                 player.x += 10;
+                game.touched = true;
             }
             if(game.input.left) {
                 player.x -= 10;
+                game.touched = true;
             }
+
         });
         // scoreLabel.score = game.score;
         // scoreLabel = new ScoreLabel(8, 8);
