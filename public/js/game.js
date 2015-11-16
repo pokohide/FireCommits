@@ -6,6 +6,10 @@ var ScreenWidth = 700
 ,   ScreenCenterX = ScreenWidth / 2
 ,   ScreenCenterY = ScreenHeight / 2;
 
+// 草の色の
+var LifeColor = ['death', '#eeeeee', '#d6e685', '#8cc665', '#44a340', '#1e6823'];
+// var LifeColor = {'#eeeeee': 1, '#d6e685': 2, '#8cc665': 3, '#44a340': 4, '#1e6823': 5 };
+
 function rand(num){
     return Math.floor(Math.random() * num);
 }
@@ -20,22 +24,14 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
         surface.context.fillStyle = color;
         surface.context.fillRect(0, 0, 11, 11);
         this.image = surface;
-        // this.life = LifeColor[color];    // 色によって定められたライフ値を持つ。
+        this.life = LifeColor.indexOf(color);    // 色によって定められたライフ値を持つ。
 
         this.x = x; this.y = y; this.frame = 3; this.time = 0;
 
-        /* まだ今回は草を動かさないので未定 */
-        // this.omega = (160 > y ? 1 : -1); this.direction = 0; this.moveSpeed = 3;
-        // this.move = function() {
-        //     this.direction += Math.PI / 180 * this.omega;
-        //     this.x -= this.moveSpeed * Math.cos(this.direction);
-        //     this.y += this.moveSpeed * Math.sin(this.direction);
-        // };
         this.addEventListener('enterframe', function() {
-            if( rand(100) == 0 ){   // 1/100で敵が打つ
-                var s = new EnemyShoot(this.x, this.y);
+            if( rand(500) == 0 ){   // 1/100で敵が打つ
+                 var s = new EnemyShoot(this.x, this.y);
             }
-            //this.move();
             // this.opacity = Math.random() * 100;
             if( this.y > ScreenHeight || this.x > ScreenWidth || this.x < -this.width || this.y < -this.height) {
                 this.remove()   // 画面外に出たら自爆する
@@ -62,9 +58,7 @@ var Player = enchant.Class.create(enchant.Sprite, {
         var s = new PlayerShoot(x, y);
         this.addEventListener('enterframe', function(){
             if(game.touched && game.frame % 10 == 0){ 
-                //console.log('打たれたはず');
-                var s = new PlayerShoot(player.x, player.y); 
-                //console.log(s);
+                var s = new PlayerShoot(player.x + 10, player.y - 5); 
             }
         });
         game.rootScene.addChild(this);
@@ -101,11 +95,19 @@ var PlayerShoot = enchant.Class.create(Shoot, {
         Shoot.call(this, x, y, Math.PI);
         this.addEventListener('enterframe', function() {
             for(var i in enemies) {
-                if(enemies[i].intersect(this)) {     // 敵に当たったら、敵を消してスコアを足す
-                    /* ここを当たってから当たった相手のライフを一つ減らして色を変えて、0だったら破壊するようにする */
+                if(enemies[i].intersect(this)) {
                     this.remove();
                     // var blast = new Blast(enemies[i].x, enemies[i].y);
-                    // enemies[i].remove();
+
+                    /* 草に当たったら色が変わってライフが減る。ライフが0になれば、死ぬ */
+                    if(--enemies[i].life === 0){
+                        enemies[i].remove();
+                    } else {
+                        var surface = new Surface(11, 11);
+                        surface.context.fillStyle = LifeColor[enemies[i].life];
+                        surface.context.fillRect(0, 0, 11, 11);
+                        enemies[i].image = surface;
+                    }
                     // game.score += 100;
                 }
             }
@@ -165,6 +167,7 @@ window.onload = function() {
     game.onload = function() {
         player = new Player(ScreenCenterX, ScreenHeight - 40);//プレイヤーを作成する
         enemies = [];
+        var i = 0;
 
         game.rootScene.backgroundColor = 'rgb(240, 255, 255)';
 
@@ -172,7 +175,8 @@ window.onload = function() {
         if(contributions) {
             contributions.forEach(function(c) {
                 var enemy = new Enemy(parseInt(c.x), parseInt(c.y) + 20, c.color);
-                enemy.key = game.frame; enemies[game.frame] = enemy;
+                //enemy.key = game.frame; enemies[game.frame] = enemy;
+                enemy.key = i; enemies[i++] = enemy;
             })
         };
 
