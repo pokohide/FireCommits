@@ -42,15 +42,19 @@ input {
   height: 600px;
   margin: 0 auto;
   margin-top: 100px;
-  border: 1px solid black;
+  // border: 1px solid black;
+}
+
+form {
+	margin: 10px;
 }
 
 
 .game{
-    width: 800px;  /* enchant.jsのGameオブジェクトの作成時に設定したゲーム画面サイズ */
+    width: 750px;  /* enchant.jsのGameオブジェクトの作成時に設定したゲーム画面サイズ */
     height: 600px;
     margin: 10px auto;
-    border: 1px solid #000000;  /* ゲーム画面を囲う線（任意） */
+    // border: 1px solid #000000;  /* ゲーム画面を囲う線（任意） */
 }
 
 .status0 {

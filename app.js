@@ -19,7 +19,6 @@ function contribution(x, y, color, count, date){
   this.date = date;
 }
 
-
 /* usernameのContributionsをの色と位置を配列で取得する */
 var getGitHubData = function(name, callback) {
     var url = 'https://github.com/users/' + name + '/contributions';
@@ -56,9 +55,6 @@ var getGitHubData = function(name, callback) {
 					// console.log(contributions);
 					callback(contributions);
 				});
-
-
-
 			});
 		});
 	}).on('error', function(e) {
@@ -71,20 +67,18 @@ var getGitHubData = function(name, callback) {
 
 
 app.get('/', function(req, res) {
+	if( !req.query.username ) {
+		res.render('index', {contributions: false} );
+		console.log('nothing');
+		return;
+	}
+	var name = req.query.username;
 
-	getGitHubData('hyde2able', function(contributions) {
+	getGitHubData(name, function(contributions) {
 		res.render('index', {contributions: JSON.stringify(contributions) });
 	});
 
 	return;
-
-	if( !req.query.username ) {
-		res.render('index');
-		return;
-	}
-
-    var name = req.query.username;
-
 });
 
 
