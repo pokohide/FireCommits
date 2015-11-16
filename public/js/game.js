@@ -6,17 +6,21 @@ var ScreenWidth = 700
 ,   ScreenCenterX = ScreenWidth / 2
 ,   ScreenCenterY = ScreenHeight / 2;
 
-// 草の色の
 var LifeColor = ['death', '#eeeeee', '#d6e685', '#8cc665', '#44a340', '#1e6823'];
-// var LifeColor = {'#eeeeee': 1, '#d6e685': 2, '#8cc665': 3, '#44a340': 4, '#1e6823': 5 };
+var RandColor = {'#eeeeee': 500, '#d6e685': 300, '#8cc665': 200, '#44a340': 100, '#1e6823': 50 };
 
 function rand(num){
     return Math.floor(Math.random() * num);
 }
+/* コミット数と草の色からそのcontributionの強さを返す */
+function strength(color, count){
+    var ret = RandColor[color] - 30 / (1.0 + Math.exp(-count / 25.0));
+    return parseInt(ret);
+}
 
 /* 敵機を生成。 */
 var Enemy = enchant.Class.create(enchant.Sprite, {
-    initialize: function(x, y, color) {
+    initialize: function(x, y, color, count) {
         enchant.Sprite.call(this, 11, 11);
 
         /* Enemyの草を描画 */
@@ -24,12 +28,14 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
         surface.context.fillStyle = color;
         surface.context.fillRect(0, 0, 11, 11);
         this.image = surface;
+        this.color = color;
+        this.strength = strength(color, count);
         this.life = LifeColor.indexOf(color);    // 色によって定められたライフ値を持つ。
 
         this.x = x; this.y = y; this.frame = 3; this.time = 0;
 
         this.addEventListener('enterframe', function() {
-            if( rand(500) == 0 ){   // 1/100で敵が打つ
+            if( rand(this.strength) == 0 ){   // 1/100で敵が打つ
                  var s = new EnemyShoot(this.x, this.y);
             }
             // this.opacity = Math.random() * 100;
@@ -57,8 +63,9 @@ var Player = enchant.Class.create(enchant.Sprite, {
 
         var s = new PlayerShoot(x, y);
         this.addEventListener('enterframe', function(){
-            if(game.touched && game.frame % 10 == 0){ 
-                var s = new PlayerShoot(player.x + 10, player.y - 5); 
+            /* 8フレームごとに発射 */
+            if(game.frame % 8 == 0){ 
+                var s = new PlayerShoot(player.x + 20, player.y - 10); 
             }
         });
         game.rootScene.addChild(this);
@@ -104,7 +111,8 @@ var PlayerShoot = enchant.Class.create(Shoot, {
                         enemies[i].remove();
                     } else {
                         var surface = new Surface(11, 11);
-                        surface.context.fillStyle = LifeColor[enemies[i].life];
+                        this.color = LifeColor[enemies[i].life];
+                        surface.context.fillStyle = this.color;
                         surface.context.fillRect(0, 0, 11, 11);
                         enemies[i].image = surface;
                     }
@@ -120,7 +128,10 @@ var EnemyShoot = enchant.Class.create(Shoot, {
     initialize: function(x, y) {
         Shoot.call(this, x, y, 0);
         this.addEventListener('enterframe', function() {    // プレイヤーに当たったらゲームオーバーに
-            if(player.within(this, 8)){ game.end(game.score, "SCORE: " + game.score )}
+            //if(player.within(this, 8)) { 
+            if(player.intersect(this)) {
+                game.end(game.score, "SCORE: " + game.score );
+            }
         })
     }
 });
@@ -166,16 +177,14 @@ window.onload = function() {
 
     game.onload = function() {
         player = new Player(ScreenCenterX, ScreenHeight - 40);//プレイヤーを作成する
-        enemies = [];
-        var i = 0;
+        var enemies = [], i = 0;
 
         game.rootScene.backgroundColor = 'rgb(240, 255, 255)';
 
         /* 敵を生成 */
         if(contributions) {
             contributions.forEach(function(c) {
-                var enemy = new Enemy(parseInt(c.x), parseInt(c.y) + 20, c.color);
-                //enemy.key = game.frame; enemies[game.frame] = enemy;
+                var enemy = new Enemy(parseInt(c.x), parseInt(c.y) + 20, c.color, c.count);
                 enemy.key = i; enemies[i++] = enemy;
             })
         };
@@ -183,13 +192,10 @@ window.onload = function() {
         game.addEventListener('enterframe', function() {
             if(game.input.right) {
                 player.x += 10;
-                game.touched = true;
             }
             if(game.input.left) {
                 player.x -= 10;
-                game.touched = true;
             }
-
         });
         // scoreLabel.score = game.score;
         // scoreLabel = new ScoreLabel(8, 8);

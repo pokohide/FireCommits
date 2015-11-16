@@ -6,6 +6,11 @@
     "start": "node app"
   },
   "dependencies": {
-    "express": "*"
+    "express": "*",
+    "ejs": "*"
+  },
+  "engines": {
+    "node": "0.8.19",
+    "npm":  "1.2.10"
   }
 }
