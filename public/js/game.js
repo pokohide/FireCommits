@@ -61,7 +61,7 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
 var Player = enchant.Class.create(enchant.Sprite, {
     initialize: function(x, y) {
         enchant.Sprite.call(this, 50, 20);
-        this.image = game.assets['../images/player.png'];     // 画像を読み込む
+        this.image = game.assets['../images/player' + playID + '.png'];     // 画像を読み込む
         this.x = x; this.y = y; this.frame = 0;
 
         var s = new PlayerShoot(x, y);
@@ -81,7 +81,7 @@ var Shoot = enchant.Class.create(enchant.Sprite, {
         enchant.Sprite.call(this, 10, 10);
         /* 自機と敵機で弾を変える */
         if( direction > 0) {
-            this.image = game.assets['../images/shot.png'];
+            this.image = game.assets['../images/shot' + playID + '.png'];
         } else {
             this.image = game.assets['../images/enemyshot.png'];
         }
@@ -260,13 +260,14 @@ window.onload = function() {
 
     game = new Game(ScreenWidth, ScreenHeight);
     /* game設定 */
-    game.preload(['../images/player.png', '../images/shot.png','../images/enemy.png', '../images/enemyshot.png', image]);
+    game.preload(['../images/player0.png', '../images/player1.png', '../images/player2.png', '../images/player3.png', '../images/player4.png', '../images/player5.png', '../images/shot0.png', '../images/shot1.png', '../images/shot2.png', '../images/shot3.png', '../images/shot4.png', '../images/shot5.png', '../images/enemy.png', '../images/enemyshot.png', image]);
     game.score = 0;
     game.fps = 24;
     game.started = false;
 
     game.onload = function() {
         enemies = [], i = 0;
+        playID = rand(6);
         PushTitleScene();
     }
     game.start();
