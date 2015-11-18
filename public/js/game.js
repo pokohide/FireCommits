@@ -11,12 +11,17 @@ var RandColor = {'#eeeeee': 500, '#d6e685': 300, '#8cc665': 200, '#44a340': 100,
 
 function rand(num){
     return Math.floor(Math.random() * num);
-}
+};
 /* コミット数と草の色からそのcontributionの強さを返す */
-function strength(color, count){
+function strength(color, count) {
     var ret = RandColor[color] - 30 / (1.0 + Math.exp(-count / 25.0));
     return parseInt(ret);
-}
+};
+/* コミット数と草の色からスコアを返す */
+function getScore(color, count) {
+    var ret = 1000 - RandColor[color] + 100 / (1.0 + Math.exp(-count / 25.0));
+    return parseInt(ret);
+};
 
 /* 敵機を生成。 */
 var Enemy = enchant.Class.create(enchant.Sprite, {
@@ -29,21 +34,19 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
         surface.context.fillRect(0, 0, 11, 11);
         this.image = surface;
         this.color = color;
+        this.count = count;
         this.strength = strength(color, count);
         this.life = LifeColor.indexOf(color);    // 色によって定められたライフ値を持つ。
 
         this.x = x; this.y = y; this.frame = 3; this.time = 0;
 
         this.addEventListener('enterframe', function() {
-            if( rand(this.strength) == 0 ){   // 1/100で敵が打つ
-                 var s = new EnemyShoot(this.x, this.y);
+            /* 一度でもプライヤーを動かしたら撃ってくるように */
+            if( game.started && rand(this.strength) == 0 ){
+                var s = new EnemyShoot(this.x, this.y);
             }
+            /* strengthのフレームごとに消えたりするようにする？ */
             // this.opacity = Math.random() * 100;
-            if( this.y > ScreenHeight || this.x > ScreenWidth || this.x < -this.width || this.y < -this.height) {
-                this.remove()   // 画面外に出たら自爆する
-            } else if (this.time++ % 10 == 0) {
-                // var s = new EnemyShoot(this.x, this.y); // 10フレームに一回打つ
-            }
 
         });
         game.rootScene.addChild(this);
@@ -56,8 +59,8 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
 
 /* 自機を生成。 */
 var Player = enchant.Class.create(enchant.Sprite, {
-    initialize: function(x,y) {
-        enchant.Sprite.call(this, 50, 20);      // 自機をスプライトとして定義
+    initialize: function(x, y) {
+        enchant.Sprite.call(this, 50, 20);
         this.image = game.assets['../images/player.png'];     // 画像を読み込む
         this.x = x; this.y = y; this.frame = 0;
 
@@ -104,19 +107,17 @@ var PlayerShoot = enchant.Class.create(Shoot, {
             for(var i in enemies) {
                 if(enemies[i].intersect(this)) {
                     this.remove();
-                    // var blast = new Blast(enemies[i].x, enemies[i].y);
-
+                    game.score += getScore(enemies[i].color, enemies[i].count);
                     /* 草に当たったら色が変わってライフが減る。ライフが0になれば、死ぬ */
                     if(--enemies[i].life === 0){
                         enemies[i].remove();
                     } else {
                         var surface = new Surface(11, 11);
-                        this.color = LifeColor[enemies[i].life];
-                        surface.context.fillStyle = this.color;
+                        enemies[i].color = LifeColor[enemies[i].life];
+                        surface.context.fillStyle = enemies[i].color;
                         surface.context.fillRect(0, 0, 11, 11);
                         enemies[i].image = surface;
                     }
-                    // game.score += 100;
                 }
             }
         });
@@ -128,79 +129,145 @@ var EnemyShoot = enchant.Class.create(Shoot, {
     initialize: function(x, y) {
         Shoot.call(this, x, y, 0);
         this.addEventListener('enterframe', function() {    // プレイヤーに当たったらゲームオーバーに
-            //if(player.within(this, 8)) { 
-            if(player.intersect(this)) {
-                game.end(game.score, "SCORE: " + game.score );
+            if(player.within(this, 8)) { 
+                GameOverScene();
+                game.end(game.score, "SCORE: " + game.score + "points." );
             }
         })
     }
 });
 
-/* 破壊エフェクト */
-var Blast = enchant.Class.create(enchant.Sprite,{
-    initialize: function(x, y){
-        enchant.Sprite.call(this, 16, 16);
-        this.x        = x;
-        this.y        = y;
-        this.image    = game.assets[BLAST];
-        this.time     = 0;
-        this.duration = 20;
-        this.frame    = 0;
-        game.rootScene.addChild(this);
-    },
-    onenterframe:function(){
-        this.time++;
-        this.frame = Math.floor(this.time/this.duration *5);
-        if(this.time == this.duration) this.remove();
-    },
-    remove: function(){
-        game.rootScene.removeChild(this);
-    }
-});
+/* タイトルシーン */
+var PushTitleScene = function() {
+    var TitleScene = new Scene();
+    TitleScene.backgroundColor = 'rgb(240, 255, 255)';
+    game.pushScene(TitleScene);     // rootScene - TitleScene
+
+    var FireCommits = new Label("FireCommits");
+    FireCommits.font = "32px 'Consolas', 'Monaco', 'MS ゴシック'";
+    FireCommits.moveTo((ScreenWidth - FireCommits._boundWidth)/2, ScreenCenterY);
+    TitleScene.addChild(FireCommits);
+    
+    var howto = new Label("スペースを押すと、ゲーム開始");
+    howto.moveTo((ScreenWidth - howto._boundWidth)/2, ScreenCenterY + 50);
+    howto.font = "14px, 'Consolas'";
+    TitleScene.addChild(howto);
+
+    var usage = new Label("左キー: 左に移動    右キー: 右に移動");
+    usage.moveTo((ScreenWidth - usage._boundWidth)/2, ScreenCenterY + 80);
+    usage.font = "14px, 'Consolas'";
+    TitleScene.addChild(usage);
+
+    game.keybind(32, 'space');      // spaceを割り当てる
+    // スペースをクリックしたらゲーム開始
+    TitleScene.addEventListener('spacebuttondown', function() {
+        GameScene(this);
+    });
+
+};
+
+/* ゲームシーン */
+var GameScene = function(scene) {
+    /* ゲームシーンはルートシーン上に */
+    game.popScene(scene);
+
+    /* プレイヤーを生成 */
+    player = new Player(ScreenCenterX, ScreenHeight - 40);
+    /* 敵を生成 */
+    if(contributions) {
+        contributions.forEach(function(c) {
+            var enemy = new Enemy(parseInt(c.x) + 7, parseInt(c.y) + 30, c.color, c.count);
+            enemy.key = i; enemies[i++] = enemy;
+        })
+    };
+
+    game.addEventListener('enterframe', function() {
+        if(game.input.right) player.x += 10; game.started = true;
+        if(game.input.left)  player.x -= 10; game.started = true;
+    });
+
+    /* スコア */
+    var score = new Label();
+    score.x = score.y = 2;  score.text = "Score: 0";
+    score.addEventListener('enterframe', function() {
+        this.text = "Score: " + game.score;
+    });
+    game.rootScene.addChild(score);
+
+    /* タイム */
+    var time = new Label();
+    time.x = ScreenCenterX; time.y = 2;
+    time.addEventListener('enterframe', function() {
+        this.text = "Time: " + parseInt(game.frame / game.fps);
+    });
+    game.rootScene.addChild(time);
+};
+
+/* クリアシーン */
+var ClearScene = function() {
+    var ClearScene = new Scene();
+    game.popScene(ClearScene);
+    var clearMessage = new Label("white");
+    clearMessage.font = "20px, 'Consolas', 'Monaco'";
+    clearMessage.text = "You beat ";
+    clearMessage.x = 10;    clearMessage.y = 10;
+    ClearScene.addChild(clearMessage);
+
+    var user = new Sprite(40, 40);
+    user.image = game.assets[image];
+    user.x = 30;    user.y = 30;  
+    user.scale(0.5, 0.5);  
+    ClearScene.addChild(user);
+
+    // var score = new Label("white");
+
+
+
+};
+
+/* ゲームオーバーシーン */
+var GameOverScene = function() {
+    var gameover = new Label("white");
+    gameover.font = "32px 'Consolas', 'Monaco', 'MS ゴシック'";
+    gameover.text = "Game Over!!";
+    gameover.moveTo((ScreenWidth - gameover._boundWidth)/2, ScreenCenterY);
+    game.rootScene.addChild(gameover);
+
+    // var tweet = new Label("white");
+    // tweet.y = ScreenCenterX - 30;
+    // tweet.y = ScreenCenterY + 30;
+    // tweet.text = "Tweetする";
+    // tweet._element.style.cursor = "pointer";
+    // tweet.addEventListener('touch_start', function() {
+    //     var EUC = encodeURIComponent;
+    //     var twiiter_url = "http://twitter.com/?status=";
+    //     var message = "あなたのスコアは " + game.score + " point です。";
+    //     location.href = twitter_url + EUC(message);
+    // });
+    // game.rootScene.addChild(tweet);
+
+};
 
 
 /*
  *      メイン処理
  */
 window.onload = function() {
-    var contributions = $('.contributions').text();
+    contributions = $('.contributions').text();
+    image = $('.image').text();
+
     contributions = JSON.parse(contributions);
 
     game = new Game(ScreenWidth, ScreenHeight);
     /* game設定 */
-    game.preload(['../images/player.png', '../images/shot.png','../images/enemy.png', '../images/enemyshot.png']);
+    game.preload(['../images/player.png', '../images/shot.png','../images/enemy.png', '../images/enemyshot.png', image]);
     game.score = 0;
     game.fps = 24;
-    game.touched = false;
-
-
+    game.started = false;
 
     game.onload = function() {
-        player = new Player(ScreenCenterX, ScreenHeight - 40);//プレイヤーを作成する
-        var enemies = [], i = 0;
-
-        game.rootScene.backgroundColor = 'rgb(240, 255, 255)';
-
-        /* 敵を生成 */
-        if(contributions) {
-            contributions.forEach(function(c) {
-                var enemy = new Enemy(parseInt(c.x), parseInt(c.y) + 20, c.color, c.count);
-                enemy.key = i; enemies[i++] = enemy;
-            })
-        };
-
-        game.addEventListener('enterframe', function() {
-            if(game.input.right) {
-                player.x += 10;
-            }
-            if(game.input.left) {
-                player.x -= 10;
-            }
-        });
-        // scoreLabel.score = game.score;
-        // scoreLabel = new ScoreLabel(8, 8);
-        // game.rootScene.addChild(scoreLabel);
-
+        enemies = [], i = 0;
+        PushTitleScene();
     }
     game.start();
 }
