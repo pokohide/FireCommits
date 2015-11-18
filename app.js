@@ -5,6 +5,7 @@ var express = require('express')
 ,	client = require('cheerio-httpcli')
 ,	app = express();
 
+
 /* appの設定 */
 app.set('port', process.env.PORT || 4000);
 app.set('views', __dirname + '/views');
