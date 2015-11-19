@@ -42,7 +42,11 @@ var getGitHubData = function(name, callback) {
 			parseString(body, function(err, result) {
 				// width = result.svg.$.width,
 				// height = result.svg.$.height;
-				data = result.svg.g[0].g;
+				try{
+					data = result.svg.g[0].g;
+				} catch(e) {
+					callback(null, null, null, e);
+				}
 
 				// 並行実行
 				async.forEach(data, function(datum, callback) {
@@ -95,15 +99,11 @@ app.get('/', function(req, res) {
 	}
 	var name = req.query.username;
 
-	try{
-		getGitHubData(name, function(contributions, image, count, e) {
-			if(e){ res.render('index', {ok: false, message: e.message}); }
-			res.render('index', {ok: true, contributions: JSON.stringify(contributions), name: name, image: image, count: count });
-		});
-	} catch(e) {
-		console.log(e.message);
-		res.render('index', {ok: false} );
-	}
+	getGitHubData(name, function(contributions, image, count, e) {
+		if(e){ res.render('index', {ok: false, message: e.message}); }
+		res.render('index', {ok: true, contributions: JSON.stringify(contributions), name: name, image: image, count: count });
+	});
+
 
 	return;
 });
