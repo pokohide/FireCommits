@@ -14,6 +14,7 @@
     
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/primer.css">
+    <link rel="stylesheet" type="text/css" href="css/icomoon/style.css">
 
     <!--&#91;if lt IE 9&#93;>
     <script src="//cdn.jsdelivr.net/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -41,18 +42,26 @@
 
     			<div class="one-fourth column">
     				<form method="get" action="/">
-    					<input type="text" name="username" placeholder="Search GitHub" class="input-contrast" size="15">
+    					<input type="text" class="username "name="username" placeholder="Search GitHub" class="input-contrast" size="15">
     					<button type="submit" class="btn btn-primary">Search</button>
     				</form>
 
     				<% if(ok) { %>
     					<% count = Number(count.replace(/[^0-9^\.]/g,"")); %>
-    					<div class="blankslate ">
+    					<div class="blankslate">
     						<img class="avatar left" src="<%= image %>" width="40" height="40">
     						<p><%= name %> <br> <span class="counter"><%= count %> total</span></p>
     					</div>
     				<% } %>
 
+    				<div class="">
+    					<ul class="circle_group clearfix">
+    						<li class="sns_circle facebook"><span class="icon-facebook"></span><a href="#"></a></li>
+    						<li class="sns_circle twitter"><span class="icon-twitter"></span><a href="#"></a></li>
+    						<li class="sns_circle hatebu"><span class="icon-hatebu"></span><a href="#"></a></li>
+    						<li class="sns_circle github"><img src="images/github.png"><a href="#"></a></li>
+						</ul>
+    				<div>
 	    		</div>
 
 	    	</div>

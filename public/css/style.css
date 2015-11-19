@@ -9,6 +9,8 @@ body {
 }
 #enchant-stage {
 	// margin: 0 auto;
+	// border: 1px solid #d8d8d8;
+	// border-radius: 3px;
 }
 
 
@@ -26,19 +28,89 @@ form {
     margin: 10px auto;
     // border: 1px solid #000000;  /* ゲーム画面を囲う線（任意） */
 }
+.username {
+	margin-right: 10px;
+}
 
-.status0 {
-  background: #eee;
+
+
+.clearfix{
+    zoom:1;
 }
-.status1 {
-  background: #d6e685;
+.clearfix:after{
+    content:"";
+    display: block;
+    clear: both;
+    height: 0;
+    visibility:hidden;
 }
-.status2 {
-  background: #8cc665;
+ 
+/* サークルのスタイル */
+.sns_circle{
+    position:relative;
+    width: 50px;
+    height: 50px;
+    margin:0 5px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 15%;
+    background-color: #999;
+    float:left;
+    list-style: none;
 }
-.status3 {
-  background: #44a340;
+ 
+/* Webフォントに関する指定 */
+.sns_circle span{
+    position:absolute;
+    padding:10px;
+    font-size:30px;
+    color:#FFF;/* 文字の色 */
 }
-.status4 {
-  background: #1e6823;
+ 
+/* リンク領域をブロック全体に */
+.sns_circle a{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 15%;
+    text-indent:-999px;
+    color:#FFF;/* 文字の色 */
+}
+ 
+/* マウスオーバー */
+.sns_circle a:hover{
+    background-color:#FFF;
+    filter:alpha(opacity=50);
+    -moz-opacity: 0.5;
+    opacity: 0.5;
+}
+ 
+/* 横幅を300pxに固定して真ん中に表示 */
+ul.circle_group{
+    width:300px;
+    margin:auto;
+    list-style: none;
+    padding:0;
+}
+ 
+/* アイコン毎の配色と配置 */ 
+.sns_circle.facebook{
+    background-color: #265a96;
+}
+ 
+.sns_circle.twitter{
+    background-color: #00acec;
+}
+ 
+.sns_circle.hatebu{
+    background-color: #006fbb;
+}
+.sns_circle.github{
+	width: 50px;
+	height: 50px;
+	background-color: #ffffff;
 }

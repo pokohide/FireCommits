@@ -49,10 +49,10 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
             // this.opacity = Math.random() * 100;
 
         });
-        game.rootScene.addChild(this);
+        playingGame.addChild(this);
     },
     remove: function() {
-        game.rootScene.removeChild(this);
+        playingGame.removeChild(this);
         delete enemies[this.key];  delete this;
     }
 });
@@ -70,10 +70,36 @@ var Player = enchant.Class.create(enchant.Sprite, {
             if(game.frame % 8 == 0){ 
                 var s = new PlayerShoot(player.x + 20, player.y - 10); 
             }
+            if( this.x < 0 ) this.x = 0;
+            if( this.x + 50 > ScreenWidth) this.x = ScreenWidth - 50;
         });
-        game.rootScene.addChild(this);
-    }
+        playingGame.addChild(this);
+    },
+    remove: function(){ playingGame.removeChild(this); delete this; }
 });
+
+/* バリアを定義 */
+var Barrier = enchant.Class.create(enchant.Sprite, {
+    initialize: function(x, y) {
+        enchant.Sprite.call(this, 50, 10);
+
+        var surface = new Surface(50, 10);
+        surface.context.fillStyle = '#9A8F8F';
+        surface.context.fillRect(0, 0, 50, 10);
+        this.image = surface;
+        this.life = 10; this.frame = 1;
+        this.x = x; this.y = y;
+
+        /* 寿命あり */
+        this.addEventListener('enterframe', function() {
+            if(this.frame % 1000 == 0) this.remove();
+        });
+        playingGame.addChild(this);
+
+    },
+    remove: function(){ barriered = false; playingGame.removeChild(this); delete this; }
+});
+
 
 /* 弾を定義 */
 var Shoot = enchant.Class.create(enchant.Sprite, {
@@ -94,9 +120,9 @@ var Shoot = enchant.Class.create(enchant.Sprite, {
                 this.remove();
             }
         });
-        game.rootScene.addChild(this);
+        playingGame.addChild(this);
     },
-    remove: function(){ game.rootScene.removeChild(this); delete this; }
+    remove: function(){ playingGame.removeChild(this); delete this; }
 });
 
 /* プレイヤーの弾を定義 */
@@ -129,10 +155,20 @@ var EnemyShoot = enchant.Class.create(Shoot, {
     initialize: function(x, y) {
         Shoot.call(this, x, y, 0);
         this.addEventListener('enterframe', function() {    // プレイヤーに当たったらゲームオーバーに
-            if(player.within(this, 8)) { 
+            // if(player.within(this, 8)) { 
+            if(player.intersect(this)) {
                 GameOverScene();
-                game.end(game.score, "SCORE: " + game.score + "points." );
+                game.pause();
+                // playingGame.end(game.score, "SCORE: " + game.score + "points." );
             }
+
+            if(barriered && barrier.intersect(this)) {
+                this.remove();
+                if( barrier.life-- == 0 ){
+                    barrier.remove();
+                } 
+            }
+
         })
     }
 });
@@ -145,7 +181,7 @@ var PushTitleScene = function() {
 
     var FireCommits = new Label("FireCommits");
     FireCommits.font = "32px 'Consolas', 'Monaco', 'MS ゴシック'";
-    FireCommits.moveTo((ScreenWidth - FireCommits._boundWidth)/2, ScreenCenterY);
+    FireCommits.moveTo((ScreenWidth - FireCommits._boundWidth)/2, ScreenCenterY - 100);
     TitleScene.addChild(FireCommits);
     
     var howto = new Label("スペースを押すと、ゲーム開始");
@@ -154,22 +190,24 @@ var PushTitleScene = function() {
     TitleScene.addChild(howto);
 
     var usage = new Label("左キー: 左に移動    右キー: 右に移動");
-    usage.moveTo((ScreenWidth - usage._boundWidth)/2, ScreenCenterY + 80);
+    usage.moveTo((ScreenWidth - usage._boundWidth)/2, ScreenCenterY + 100);
     usage.font = "14px, 'Consolas'";
     TitleScene.addChild(usage);
 
     game.keybind(32, 'space');      // spaceを割り当てる
     // スペースをクリックしたらゲーム開始
     TitleScene.addEventListener('spacebuttondown', function() {
-        GameScene(this);
+        GameScene();
     });
-
 };
 
 /* ゲームシーン */
-var GameScene = function(scene) {
+var GameScene = function(next) {
+    playingGame = new Scene();
+    playingGame.backgroundColor = 'rgb(240, 255, 255)';
+
     /* ゲームシーンはルートシーン上に */
-    game.popScene(scene);
+    game.replaceScene(playingGame);
 
     /* プレイヤーを生成 */
     player = new Player(ScreenCenterX, ScreenHeight - 40);
@@ -181,26 +219,35 @@ var GameScene = function(scene) {
         })
     };
 
-    game.addEventListener('enterframe', function() {
+    barriered = false;
+    playingGame.addEventListener('enterframe', function() {
         if(game.input.right) player.x += 10; game.started = true;
         if(game.input.left)  player.x -= 10; game.started = true;
+
+        if(game.input.up && game.score > 10000) {
+            game.score -= 10000; 
+            barrier = new Barrier(player.x, player.y - 20);
+            barriered = true;
+        }
+
     });
 
     /* スコア */
     var score = new Label();
+    score.moveTo()
     score.x = score.y = 2;  score.text = "Score: 0";
     score.addEventListener('enterframe', function() {
         this.text = "Score: " + game.score;
     });
-    game.rootScene.addChild(score);
+    playingGame.addChild(score);
 
     /* タイム */
     var time = new Label();
     time.x = ScreenCenterX; time.y = 2;
     time.addEventListener('enterframe', function() {
-        this.text = "Time: " + parseInt(game.frame / game.fps);
+        this.text = "Time: " + parseInt(game.frame / game.fps) + "s";
     });
-    game.rootScene.addChild(time);
+    playingGame.addChild(time);
 };
 
 /* クリアシーン */
@@ -231,8 +278,19 @@ var GameOverScene = function() {
     gameover.font = "32px 'Consolas', 'Monaco', 'MS ゴシック'";
     gameover.text = "Game Over!!";
     gameover.moveTo((ScreenWidth - gameover._boundWidth)/2, ScreenCenterY);
-    game.rootScene.addChild(gameover);
+    playingGame.addChild(gameover);
 
+    game.keybind(32, 'space');      // spaceを割り当てる
+    // スペースをクリックしたらゲーム開始
+    playingGame.addEventListener('spacebuttondown', function() {
+        /* 自機、敵機を全て削除・初期化 */
+        player.remove();
+        enemies = [];
+        for(var i in enemies){ enemies[i].remove(); }
+        game.frame = 0; game.score = 0;
+        GameScene();
+        game.resume();
+    });
     // var tweet = new Label("white");
     // tweet.y = ScreenCenterX - 30;
     // tweet.y = ScreenCenterY + 30;

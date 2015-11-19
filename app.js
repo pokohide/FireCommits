@@ -90,11 +90,15 @@ app.get('/', function(req, res) {
 	}
 	var name = req.query.username;
 
-	getGitHubData(name, function(contributions, image, count, e) {
-		if(e){ res.render('index', {ok: false, message: e.message}); }
-
-		res.render('index', {ok: true, contributions: JSON.stringify(contributions), name: name, image: image, count: count });
-	});
+	try{
+		getGitHubData(name, function(contributions, image, count, e) {
+			if(e){ res.render('index', {ok: false, message: e.message}); }
+			res.render('index', {ok: true, contributions: JSON.stringify(contributions), name: name, image: image, count: count });
+		});
+	} catch(e) {
+		console.log(e.message);
+		res.render('index', {ok: false} );
+	}
 
 	return;
 });
