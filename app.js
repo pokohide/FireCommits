@@ -46,6 +46,7 @@ var getGitHubData = function(name, callback) {
 					data = result.svg.g[0].g;
 				} catch(e) {
 					callback(null, null, null, e);
+					return;
 				}
 
 				// 並行実行
