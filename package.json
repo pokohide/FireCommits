@@ -6,17 +6,13 @@
     "start": "node app"
   },
   "dependencies": {
-    "express": "*",
-    "ejs": "*",
-    "xml2js": "*",
+    "express": "4.13.3",
+    "ejs": "2.3.4",
+    "xml2js": "0.4.15",
     "cheerio-httpcli": "*",
-    "async": "*",
+    "async": "1.5.0",
     "https": "*",
-    "fs": "*",
-    "ya-csv": "*",
-    "nedb": "^1.4.0",
     "body-parser": "^1.14.1",
-    "request": "^2.67.0",
     "milkcocoa": "^0.3.1",
     "socket.io": "^1.3.7"
   },

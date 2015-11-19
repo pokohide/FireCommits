@@ -87,12 +87,6 @@ var getGitHubImage = function(name, callback) {
 
 
 app.get('/', function(req, res) {
-	
-	// onでデータストアのpushイベントを監視します
-	ds.on("push", function(data) {
-		// console.log('push監視');
-	})
-
 
 	if( !req.query.username ) {
 		res.render('index', {ok: false} );
