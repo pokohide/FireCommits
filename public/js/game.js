@@ -159,7 +159,6 @@ var EnemyShoot = enchant.Class.create(Shoot, {
             if(player.intersect(this)) {
                 GameOverScene();
                 game.pause();
-                // playingGame.end(game.score, "SCORE: " + game.score + "points." );
             }
 
             if(barriered && barrier.intersect(this)) {
@@ -184,15 +183,20 @@ var PushTitleScene = function() {
     FireCommits.moveTo((ScreenWidth - FireCommits._boundWidth)/2, ScreenCenterY - 100);
     TitleScene.addChild(FireCommits);
     
-    var howto = new Label("スペースを押すと、ゲーム開始");
-    howto.moveTo((ScreenWidth - howto._boundWidth)/2, ScreenCenterY + 50);
-    howto.font = "14px, 'Consolas'";
-    TitleScene.addChild(howto);
+    var usage1 = new Label("スペースを押すと、ゲーム開始");
+    usage1.moveTo((ScreenWidth - usage1._boundWidth)/2, ScreenCenterY + 50);
+    usage1.font = "18px, 'Consolas'";
+    TitleScene.addChild(usage1);
 
-    var usage = new Label("左キー: 左に移動    右キー: 右に移動");
-    usage.moveTo((ScreenWidth - usage._boundWidth)/2, ScreenCenterY + 100);
-    usage.font = "14px, 'Consolas'";
-    TitleScene.addChild(usage);
+    var usage2 = new Label("左キー: 左に移動    右キー: 右に移動");
+    usage2.moveTo((ScreenWidth - usage2._boundWidth)/2, ScreenCenterY + 75);
+    usage2.font = "18px, 'Consolas'";
+    TitleScene.addChild(usage2);
+
+    var usage3 = new Label("上キー: 10回耐えるバリア設置(scoreを50000使用)");
+    usage3.moveTo((ScreenWidth - usage3._boundWidth)/2, ScreenCenterY + 100);
+    usage3.font = "18px, 'Consolas'";
+    TitleScene.addChild(usage3);
 
     game.keybind(32, 'space');      // spaceを割り当てる
     // スペースをクリックしたらゲーム開始
@@ -224,8 +228,8 @@ var GameScene = function(next) {
         if(game.input.right) player.x += 10; game.started = true;
         if(game.input.left)  player.x -= 10; game.started = true;
 
-        if(game.input.up && game.score > 10000) {
-            game.score -= 10000; 
+        if(game.input.up && game.score > 50000) {
+            game.score -= 50000; 
             barrier = new Barrier(player.x, player.y - 20);
             barriered = true;
         }
@@ -277,8 +281,14 @@ var GameOverScene = function() {
     var gameover = new Label("white");
     gameover.font = "32px 'Consolas', 'Monaco', 'MS ゴシック'";
     gameover.text = "Game Over!!";
-    gameover.moveTo((ScreenWidth - gameover._boundWidth)/2, ScreenCenterY);
+    gameover.moveTo((ScreenWidth - gameover._boundWidth)/2, ScreenCenterY - 10);
     playingGame.addChild(gameover);
+
+    var restart = new Label("white");
+    restart.font = "14px 'メイリオ', 'MS ゴシック'";
+    restart.text = "スペースでリトライ";
+    restart.moveTo((ScreenWidth - restart._boundWidth)/2, ScreenCenterY + 30);
+    playingGame.addChild(restart);
 
     game.keybind(32, 'space');      // spaceを割り当てる
     // スペースをクリックしたらゲーム開始
@@ -314,7 +324,7 @@ window.onload = function() {
     contributions = $('.contributions').text();
     image = $('.image').text();
 
-    contributions = JSON.parse(contributions);
+    if(contributions) contributions = JSON.parse(contributions);
 
     game = new Game(ScreenWidth, ScreenHeight);
     /* game設定 */

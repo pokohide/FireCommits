@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/primer.css">
     <link rel="stylesheet" type="text/css" href="css/icomoon/style.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
 
     <!--&#91;if lt IE 9&#93;>
     <script src="//cdn.jsdelivr.net/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -24,6 +25,7 @@
     <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="js/enchant.js"></script> 
     <script type="text/javascript" src="js/game.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
 </head>
 
 
@@ -31,7 +33,7 @@
 <div class="container">
     <div class="columns">
     	<div class="column three-fourth centered contents">
-    		<h1>FireCommits</h1>
+    		<h1><a href="/">FireCommits</a></h1>
     		<div class="columns">
 
 	    		<div class="three-fourths column">
@@ -42,7 +44,7 @@
 
     			<div class="one-fourth column">
     				<form method="get" action="/">
-    					<input type="text" class="username "name="username" placeholder="Search GitHub" class="input-contrast" size="15">
+    					<input type="text" class="username" id="username" name="username" placeholder="Search GitHub" class="input-contrast" size="15">
     					<button type="submit" class="btn btn-primary">Search</button>
     				</form>
 
@@ -53,6 +55,16 @@
     						<p><%= name %> <br> <span class="counter"><%= count %> total</span></p>
     					</div>
     				<% } %>
+
+    				<% if(!ok) { %>
+    					<ol class="menu" id="githubs">
+    						<h3 class="menu-heading">Ranking</h3>
+    						
+    						
+    					</ol>
+    				<% } %>
+
+    				<div class="aa"></div>
 
     				<div class="">
     					<ul class="circle_group clearfix">

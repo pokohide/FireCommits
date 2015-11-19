@@ -1,5 +1,6 @@
 var express = require('express')
 ,	https = require('https')
+,	csv = require('ya-csv')
 ,	parseString = require('xml2js').parseString
 ,	async = require('async')
 ,	client = require('cheerio-httpcli')
@@ -80,9 +81,26 @@ var getGitHubImage = function(name, callback) {
 	});
 };
 
+/* ランキングcsvを取得 */
+var readRanking = function(file) {
+	var reader = csv.createCsvFileReader(file);
+	var ranking = [];
 
+	/* username, image, contributionsの順 */
+	reader.on('data', function(record) {
+		ranking.push(record);
+	}).on('end', function() {
+		console.log(ranking);
+	});
+};
+
+/* ランキングcsvを更新 */
+var writeRanking = function(file) {
+	var writer = csv.createCsvFileWriter(file);
+};
 
 app.get('/', function(req, res) {
+	readRanking('./ranking.csv');
 	if( !req.query.username ) {
 		res.render('index', {ok: false} );
 		console.log('nothing');

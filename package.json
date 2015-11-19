@@ -11,7 +11,9 @@
     "xml2js": "*",
     "cheerio-httpcli": "*",
     "async": "*",
-    "https": "*"
+    "https": "*",
+    "fs": "*",
+    "ya-csv": "*"
   },
   "engines": {
     "node": "*",
