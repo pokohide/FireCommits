@@ -115,14 +115,13 @@ ul.circle_group{
 	background-color: #ffffff;
 }
 
-
+.user {
+	margin-bottom: 10px;
+}
 .github {
 	height: 60px;
 	border-bottom: 1px dotted gray;
 }
 .github b{
 	font-size: 18px;
-}
-.github p {
-	//padding: 15px 0;
 }

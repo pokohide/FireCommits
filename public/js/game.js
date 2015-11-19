@@ -6,6 +6,10 @@ var ScreenWidth = 700
 ,   ScreenCenterX = ScreenWidth / 2
 ,   ScreenCenterY = ScreenHeight / 2;
 
+var contributions = $('.contributions').text()
+,   image = $('.image').text()
+,   name = $('.name').text()
+,   count = $('.count').text();
 var LifeColor = ['death', '#eeeeee', '#d6e685', '#8cc665', '#44a340', '#1e6823'];
 var RandColor = {'#eeeeee': 500, '#d6e685': 300, '#8cc665': 200, '#44a340': 100, '#1e6823': 50 };
 
@@ -62,7 +66,7 @@ var Player = enchant.Class.create(enchant.Sprite, {
     initialize: function(x, y) {
         enchant.Sprite.call(this, 50, 20);
         this.image = game.assets['../images/player' + playID + '.png'];     // 画像を読み込む
-        this.x = x; this.y = y; this.frame = 0;
+        this.x = x; this.y = y; this.frame = 0; this.life = 3;
 
         var s = new PlayerShoot(x, y);
         this.addEventListener('enterframe', function(){
@@ -99,7 +103,16 @@ var Barrier = enchant.Class.create(enchant.Sprite, {
     },
     remove: function(){ barriered = false; playingGame.removeChild(this); delete this; }
 });
-
+/* ライフを定義 */
+var Life = enchant.Class.create(enchant.Sprite, {
+    initialize: function(x, y) {
+        enchant.Sprite.call(this, 20, 17);
+        this.image = game.assets['../images/life.png'];
+        this.x = x; this.y = y;
+        playingGame.addChild(this);
+    },
+    remove: function(){ playingGame.removeChild(this); delete this; }
+});
 
 /* 弾を定義 */
 var Shoot = enchant.Class.create(enchant.Sprite, {
@@ -157,8 +170,13 @@ var EnemyShoot = enchant.Class.create(Shoot, {
         this.addEventListener('enterframe', function() {    // プレイヤーに当たったらゲームオーバーに
             // if(player.within(this, 8)) { 
             if(player.intersect(this)) {
-                GameOverScene();
-                game.pause();
+                this.remove();
+                if(player.life-- == 0){
+                    GameOverScene();
+                    game.pause();
+                } else {
+                    lifes[player.life].remove();
+                }
             }
 
             if(barriered && barrier.intersect(this)) {
@@ -215,6 +233,11 @@ var GameScene = function(next) {
 
     /* プレイヤーを生成 */
     player = new Player(ScreenCenterX, ScreenHeight - 40);
+    for(var j=0; j<player.life; j++) {
+        var life = new Life(ScreenWidth - 110 + j*30, 8);
+        lifes[j] = life;
+    }
+
     /* 敵を生成 */
     if(contributions) {
         contributions.forEach(function(c) {
@@ -239,7 +262,7 @@ var GameScene = function(next) {
     /* スコア */
     var score = new Label();
     score.moveTo()
-    score.x = score.y = 2;  score.text = "Score: 0";
+    score.x = 2;  score.y = 8;  score.text = "Score: 0";
     score.addEventListener('enterframe', function() {
         this.text = "Score: " + game.score;
     });
@@ -247,11 +270,17 @@ var GameScene = function(next) {
 
     /* タイム */
     var time = new Label();
-    time.x = ScreenCenterX; time.y = 2;
+    time.x = ScreenCenterX; time.y = 8;
     time.addEventListener('enterframe', function() {
         this.text = "Time: " + parseInt(game.frame / game.fps) + "s";
     });
     playingGame.addChild(time);
+
+    /* ライフ */
+    var life = new Label();
+    life.x = ScreenWidth-150; life.y = 8;
+    life.text = "Life: ";
+    playingGame.addChild(life);
 };
 
 /* クリアシーン */
@@ -301,40 +330,97 @@ var GameOverScene = function() {
         GameScene();
         game.resume();
     });
-    // var tweet = new Label("white");
-    // tweet.y = ScreenCenterX - 30;
-    // tweet.y = ScreenCenterY + 30;
-    // tweet.text = "Tweetする";
-    // tweet._element.style.cursor = "pointer";
-    // tweet.addEventListener('touch_start', function() {
-    //     var EUC = encodeURIComponent;
-    //     var twiiter_url = "http://twitter.com/?status=";
-    //     var message = "あなたのスコアは " + game.score + " point です。";
-    //     location.href = twitter_url + EUC(message);
-    // });
-    // game.rootScene.addChild(tweet);
 
+
+    /* 今回のレコード */
+    record = {};
+    record.name = $('.name').text();
+    record.image = $('.image').text();
+    record.count = parseInt($('.count').text());
+    record.score = game.score;
+    console.log(record);
+
+    if(ranking.length < 5){
+        console.log('ok');
+        rankDS.push(record);
+    } else {
+
+    }
+
+
+    /* もしランキング最下位よりも特典が高ければ */
+    // if( parseInt( ranking[ranking.length - 1][3] ) < game.score ){
+
+    //     ranking.push([name, image, count, game.score]);
+    //     /* ゲーム結果がランキングに入るのなら追加 */
+    //     ranking.sort(function(a,b) {
+    //         if(parseInt(a[3]) < parseInt(b[3]) ) return -1;
+    //         if(parseInt(a[3]) > parseInt(b[3]) ) return 1;
+    //         return 0;
+    //     });
+
+    //     /* ランキング順に再表示 */
+    //     for(var i in ranking) {
+    //         var name = ranking[i][0],   image = ranking[i][1],  count = ranking[i][2],  score = ranking[i][3];
+    //         var html = "<img class='avatar left' src='" + image + "' width='40' height='40'>";
+    //         html += "<p class='text-center'><b id='name'>" + name + "</b><span class='counter'>" + count + " total</span></p>";
+    //         html += "<p class='right'><strong>" + score + "</strong> pt</p>";
+
+    //         $github = $('<li></li>', {
+    //             addClass: 'menu-item github',
+    //             id: 'github',
+    //             html: html
+    //         });
+    //         $github.appendTo($('#githubs')).hide().fadeIn(1000);
+    //     }
+    // }
 };
 
+/* 今回のレコードをランキングに挿入 */
+var insertSort = function(ranking, record) {
+
+};
 
 /*
  *      メイン処理
  */
 window.onload = function() {
+
     contributions = $('.contributions').text();
     image = $('.image').text();
+    name = $('.name').text();
+    count = $('.count').text();
+
+
+    var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
+    var history = milkcocoa.dataStore('history');
+    rankDS = milkcocoa.dataStore('ranking');
+    milkcocoa.dataStore('history').stream().sort('desc').next(function(err, data) {
+        // console.log(data); // 古い方から10件のデータ
+    });
+    // if(name) history.push({name: name, image: image, count: count});
+
+
+    ranking = [];
+    rankDS.stream().size(5).sort('desc').next(function(err, data) {
+        data.forEach(function(datum) {
+            id = datum.id;
+            datum = datum.value;
+            ranking.push({id: id, name: datum.name, image: datum.image, count: datum.count, score: datum.score });
+        });
+    });
 
     if(contributions) contributions = JSON.parse(contributions);
 
     game = new Game(ScreenWidth, ScreenHeight);
     /* game設定 */
-    game.preload(['../images/player0.png', '../images/player1.png', '../images/player2.png', '../images/player3.png', '../images/player4.png', '../images/player5.png', '../images/shot0.png', '../images/shot1.png', '../images/shot2.png', '../images/shot3.png', '../images/shot4.png', '../images/shot5.png', '../images/enemy.png', '../images/enemyshot.png', image]);
+    game.preload(['../images/player0.png', '../images/player1.png', '../images/player2.png', '../images/player3.png', '../images/player4.png', '../images/player5.png', '../images/shot0.png', '../images/shot1.png', '../images/shot2.png', '../images/shot3.png', '../images/shot4.png', '../images/shot5.png', '../images/enemy.png', '../images/enemyshot.png', '../images/life.png', image]);
     game.score = 0;
     game.fps = 24;
     game.started = false;
 
     game.onload = function() {
-        enemies = [], i = 0;
+        enemies = [], i = 0, lifes = [];
         playID = rand(6);
         PushTitleScene();
     }

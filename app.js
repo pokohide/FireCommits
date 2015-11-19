@@ -1,11 +1,15 @@
 var express = require('express')
 ,	https = require('https')
-,	csv = require('ya-csv')
 ,	parseString = require('xml2js').parseString
 ,	async = require('async')
 ,	client = require('cheerio-httpcli')
 ,	app = express();
 
+
+//////////////////  MilkCocoa ////////////////
+var MilkCocoa = require('milkcocoa');
+var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
+var ds = milkcocoa.dataStore("ranking");	// dataStore作成
 
 /* appの設定 */
 app.set('port', process.env.PORT || 4000);
@@ -81,26 +85,15 @@ var getGitHubImage = function(name, callback) {
 	});
 };
 
-/* ランキングcsvを取得 */
-var readRanking = function(file) {
-	var reader = csv.createCsvFileReader(file);
-	var ranking = [];
-
-	/* username, image, contributionsの順 */
-	reader.on('data', function(record) {
-		ranking.push(record);
-	}).on('end', function() {
-		console.log(ranking);
-	});
-};
-
-/* ランキングcsvを更新 */
-var writeRanking = function(file) {
-	var writer = csv.createCsvFileWriter(file);
-};
 
 app.get('/', function(req, res) {
-	readRanking('./ranking.csv');
+	
+	// onでデータストアのpushイベントを監視します
+	ds.on("push", function(data) {
+		// console.log('push監視');
+	})
+
+
 	if( !req.query.username ) {
 		res.render('index', {ok: false} );
 		console.log('nothing');
@@ -120,6 +113,8 @@ app.get('/', function(req, res) {
 
 	return;
 });
+
+
 
 
 app.listen(app.get('port'));

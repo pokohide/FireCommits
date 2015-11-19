@@ -26,6 +26,8 @@
     <script type="text/javascript" src="js/enchant.js"></script> 
     <script type="text/javascript" src="js/game.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
+    <script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+    <script src="https://cdn.mlkcca.com/v2.0.0/milkcocoa.js"></script>
 </head>
 
 
@@ -33,8 +35,10 @@
 <div class="container">
     <div class="columns">
     	<div class="column three-fourth centered contents">
-    		<h1><a href="/">FireCommits</a></h1>
     		<div class="columns">
+    			<div class="one-half centered column">
+    				<a href="/"><img src="images/logo.png"></a>
+    			</div>
 
 	    		<div class="three-fourths column">
     				<div class="game">
@@ -50,28 +54,25 @@
 
     				<% if(ok) { %>
     					<% count = Number(count.replace(/[^0-9^\.]/g,"")); %>
-    					<div class="blankslate">
+    					<div class="blankslate user">
     						<img class="avatar left" src="<%= image %>" width="40" height="40">
     						<p><%= name %> <br> <span class="counter"><%= count %> total</span></p>
     					</div>
     				<% } %>
 
-    				<% if(!ok) { %>
+    				<% if(true) { %>
     					<ol class="menu" id="githubs">
     						<h3 class="menu-heading">Ranking</h3>
-    						
-    						
     					</ol>
     				<% } %>
 
-    				<div class="aa"></div>
 
-    				<div class="">
+    				<div class="sns">
     					<ul class="circle_group clearfix">
-    						<li class="sns_circle facebook"><span class="icon-facebook"></span><a href="#"></a></li>
-    						<li class="sns_circle twitter"><span class="icon-twitter"></span><a href="#"></a></li>
-    						<li class="sns_circle hatebu"><span class="icon-hatebu"></span><a href="#"></a></li>
-    						<li class="sns_circle github"><img src="images/github.png"><a href="#"></a></li>
+    						<li class="sns_circle facebook"><span class="icon-facebook"></span><a href="http://www.facebook.com/share.php?u=https://fire-commits.herokuapp.com/" onclick="window.open(this.href, 'FBwindow', 'width=650, height450, menubar=no, toolbar=no, scrollbars=yes'); return false;"></a></li>
+    						<li class="sns_circle twitter"><span class="icon-twitter"></span><a href="http://twitter.com/share?url=https://fire-commits.herokuapp.com/&text=エンジニアによるエンジニアのための草刈機" target="_blank"></a></li>
+    						<li class="sns_circle hatebu"><span class="icon-hatebu"></span><a href="http://b.hatena.ne.jp/entry/https://fire-commits.herokuapp.com/" data-hatena-bookmark-layout="simple" title="FireCommits" target="_blank"></a></li>
+    						<li class="sns_circle github"><img src="images/github.png"><a href="https://github.com/hyde2able/FireCommits" tartget="_blank"></a></li>
 						</ul>
     				<div>
 	    		</div>
@@ -84,8 +85,10 @@
     	<div style="display:none;">
     		<% if(ok){ %>
     			<div class="contributions"><%=  contributions %></div>
+    			<div class="name"><%= name %></div>
     			<div class="image"><%= image %></div>
     			<div class="count"><%= count %></div>
+    			<div class="ranking"></div>
     		<% } %>
     	</div>
 
