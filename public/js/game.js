@@ -57,7 +57,7 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
     },
     remove: function() {
         playingGame.removeChild(this);
-        delete enemies[this.key];  delete this;
+        delete enemies[this.key]; delete this;
     }
 });
 
@@ -150,6 +150,15 @@ var PlayerShoot = enchant.Class.create(Shoot, {
                     /* 草に当たったら色が変わってライフが減る。ライフが0になれば、死ぬ */
                     if(--enemies[i].life === 0){
                         enemies[i].remove();
+                        /* 敵が全滅したら */
+                        console.log(eneNum);
+                        eneNum--;
+                        if(eneNum == 0) {
+                            setTimeout(function(){
+                                ClearScene(); game.pause();
+                            },1000);
+                            game.score += 10000;
+                        }
                     } else {
                         var surface = new Surface(11, 11);
                         enemies[i].color = LifeColor[enemies[i].life];
@@ -202,18 +211,18 @@ var PushTitleScene = function() {
     TitleScene.addChild(FireCommits);
     
     var usage1 = new Label("スペースを押すと、ゲーム開始");
-    usage1.moveTo((ScreenWidth - usage1._boundWidth)/2, ScreenCenterY + 50);
-    usage1.font = "18px, 'Consolas'";
+    usage1.moveTo((ScreenWidth - usage1._boundWidth)/2, ScreenCenterY + 30);
+    usage1.font = "15px 'MS ゴシック'";
     TitleScene.addChild(usage1);
 
     var usage2 = new Label("左キー: 左に移動    右キー: 右に移動");
-    usage2.moveTo((ScreenWidth - usage2._boundWidth)/2, ScreenCenterY + 75);
-    usage2.font = "18px, 'Consolas'";
+    usage2.moveTo((ScreenWidth - usage2._boundWidth)/2, ScreenCenterY + 60);
+    usage2.font = "15px 'MS ゴシック'";
     TitleScene.addChild(usage2);
 
-    var usage3 = new Label("上キー: 10回耐えるバリア設置(scoreを50000使用)");
-    usage3.moveTo((ScreenWidth - usage3._boundWidth)/2, ScreenCenterY + 100);
-    usage3.font = "18px, 'Consolas'";
+    var usage3 = new Label("↑キー: 体力10の壁設置(50000score使用)");
+    usage3.moveTo((ScreenWidth - usage3._boundWidth)/2, ScreenCenterY + 90);
+    usage3.font = "15px 'MS ゴシック'";
     TitleScene.addChild(usage3);
 
     game.keybind(32, 'space');      // spaceを割り当てる
@@ -238,12 +247,15 @@ var GameScene = function(next) {
         lifes[j] = life;
     }
 
+    var i = 0;
     /* 敵を生成 */
     if(contributions) {
         contributions.forEach(function(c) {
             var enemy = new Enemy(parseInt(c.x) + 7, parseInt(c.y) + 30, c.color, c.count);
-            enemy.key = i; enemies[i++] = enemy;
+            enemy.key = i; enemies[enemy.key] = enemy;  i++;
         })
+        eneNum = i;
+        console.log(eneNum);
     };
 
     barriered = false;
@@ -263,6 +275,7 @@ var GameScene = function(next) {
     var score = new Label();
     score.moveTo()
     score.x = 2;  score.y = 8;  score.text = "Score: 0";
+    score.font = "14px 'メイリオ', 'MS ゴシック'";
     score.addEventListener('enterframe', function() {
         this.text = "Score: " + game.score;
     });
@@ -271,6 +284,7 @@ var GameScene = function(next) {
     /* タイム */
     var time = new Label();
     time.x = ScreenCenterX; time.y = 8;
+    time.font = "14px 'メイリオ', 'MS ゴシック'";
     time.addEventListener('enterframe', function() {
         this.text = "Time: " + parseInt(game.frame / game.fps) + "s";
     });
@@ -280,26 +294,31 @@ var GameScene = function(next) {
     var life = new Label();
     life.x = ScreenWidth-150; life.y = 8;
     life.text = "Life: ";
+    life.font = "14px 'メイリオ', 'MS ゴシック'";
     playingGame.addChild(life);
 };
 
 /* クリアシーン */
 var ClearScene = function() {
-    var ClearScene = new Scene();
-    game.popScene(ClearScene);
-    var clearMessage = new Label("white");
-    clearMessage.font = "20px, 'Consolas', 'Monaco'";
-    clearMessage.text = "You beat ";
-    clearMessage.x = 10;    clearMessage.y = 10;
-    ClearScene.addChild(clearMessage);
+    console.log('ok');
+    var clear = new Label("white");
+    clear.font = "40px 'Consolas', 'Monaco'";
+    clear.text = "Clear!!";
+    clear.moveTo( (ScreenWidth - clear._boundWidth) / 2, ScreenCenterY - 10);
+    playingGame.addChild(clear);
 
-    var user = new Sprite(40, 40);
-    user.image = game.assets[image];
-    user.x = 30;    user.y = 30;  
-    user.scale(0.5, 0.5);  
-    ClearScene.addChild(user);
+    var tweet_btn = new Sprite(114, 40);
+    tweet_btn.image = game.assets['../images/tweet.png'];
+    tweet_btn.addEventListener('touchstart', function() {
+        var EUC = encodeURIComponent;
+        var twitter_url = "http://twitter.com/?status=";
+        var message = "あなたのスコアは" + game.score + " ptです。 \nhttps://fire-commits.herokuapp.com/\n#FireCommits";
+        // Twitter に移動
+        location.href = twitter_url+ EUC(message);
+    });
+    tweet_btn.moveTo((ScreenWidth - 114)/2, ScreenCenterY + 50);
+    playingGame.addChild(tweet_btn);
 
-    // var score = new Label("white");
 
 
 
@@ -314,7 +333,7 @@ var GameOverScene = function() {
     playingGame.addChild(gameover);
 
     var restart = new Label("white");
-    restart.font = "14px 'メイリオ', 'MS ゴシック'";
+    restart.font = "16px 'メイリオ', 'MS ゴシック'";
     restart.text = "スペースでリトライ";
     restart.moveTo((ScreenWidth - restart._boundWidth)/2, ScreenCenterY + 30);
     playingGame.addChild(restart);
@@ -331,6 +350,18 @@ var GameOverScene = function() {
         game.resume();
     });
 
+    var tweet_btn = new Sprite(114, 40);
+    tweet_btn.image = game.assets['../images/tweet.png'];
+    tweet_btn.addEventListener('touchstart', function() {
+        var EUC = encodeURIComponent;
+        var twitter_url = "http://twitter.com/?status=";
+        var message = "あなたのスコアは" + game.score + " ptです。 \nhttps://fire-commits.herokuapp.com/\n#FireCommits";
+        // Twitter に移動
+        location.href = twitter_url+ EUC(message);
+    });
+    tweet_btn.moveTo((ScreenWidth - 114)/2 , ScreenCenterY + 60);
+    playingGame.addChild(tweet_btn);
+
 
     /* 今回のレコード */
     record = {};
@@ -340,12 +371,13 @@ var GameOverScene = function() {
     record.score = game.score;
 
     var html = "<img class='avatar left' src='" + record.image + "' width='40' height='40'>";
-    html += "<p class='text-center'><b id='name'>" + record.name + "</b><span class='counter'>" + record.count + " total</span></p>";
-    html += "<p class='right'><strong>" + record.score + "</strong> pt</p>";
+    html += "<p class='text-center'><b id='name'>" + e(record.name) + "</b><span class='counter'>" + e(record.count) + " total</span></p>";
+    html += "<p class='right'><strong>" + e(record.score) + "</strong> pt</p>";
 
-    /* もしランキング内の5人もいなければ */
+    /* もしランキング内の30人もいなければ */
     if(ranking.length < 30){
         rankDS.push(record, function(err, datum) {
+            if(err) { return; }
             record.id = datum.id;
             ranking.push(record);
         });
@@ -360,6 +392,7 @@ var GameOverScene = function() {
         var id = insertRec(ranking, record);
         if( id != 0 ){
             rankDS.set(id[0], record, function(err, datum) {
+                if(err){ return; }
                 record.id = datum.id;
                 ranking[id[1]] = record;
             });
@@ -371,6 +404,9 @@ var GameOverScene = function() {
 
 
 };
+var e = function(str) {
+    return escape(str);
+}
 
 /* ランキング下位のスコアより高ければその下位のidを返す */
 var insertRec = function(ranking, record) {
@@ -393,7 +429,6 @@ window.onload = function() {
     name = $('.name').text();
     count = $('.count').text();
 
-
     var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
     var history = milkcocoa.dataStore('history');
     rankDS = milkcocoa.dataStore('ranking');
@@ -401,7 +436,6 @@ window.onload = function() {
         // console.log(data); // 古い方から10件のデータ
     });
     // if(name) history.push({name: name, image: image, count: count});
-
 
     ranking = [];
     rankDS.stream().size(30).sort('desc').next(function(err, data) {
@@ -416,13 +450,13 @@ window.onload = function() {
 
     game = new Game(ScreenWidth, ScreenHeight);
     /* game設定 */
-    game.preload(['../images/player0.png', '../images/player1.png', '../images/player2.png', '../images/player3.png', '../images/player4.png', '../images/player5.png', '../images/shot0.png', '../images/shot1.png', '../images/shot2.png', '../images/shot3.png', '../images/shot4.png', '../images/shot5.png', '../images/enemy.png', '../images/enemyshot.png', '../images/life.png', image]);
+    game.preload(['../images/player0.png', '../images/player1.png', '../images/player2.png', '../images/player3.png', '../images/player4.png', '../images/player5.png', '../images/shot0.png', '../images/shot1.png', '../images/shot2.png', '../images/shot3.png', '../images/shot4.png', '../images/shot5.png', '../images/enemy.png', '../images/enemyshot.png', '../images/life.png', '../images/tweet.png', image]);
     game.score = 0;
     game.fps = 24;
     game.started = false;
 
     game.onload = function() {
-        enemies = [], i = 0, lifes = [];
+        enemies = [], eneNum = 0, lifes = [];
         playID = rand(6);
         PushTitleScene();
     }

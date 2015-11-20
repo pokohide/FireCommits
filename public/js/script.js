@@ -26,11 +26,11 @@ $(function() {
     		,	contributions = datum.count
     		,	score = datum.score;
 		
-			var html = "<a href='https://github.com/" + name + "' target='_blank'><div class='avatar-parent-child left'>";
+			var html = "<a href='https://github.com/" + e(name) + "' target='_blank'><div class='avatar-parent-child left'>";
 			html += "<img class='avatar' src='" + image + "' width='40' height='40'>";
-			html += "<span class='avatar avatar-child counter' width='10' height='10'>" + i + "</span></div></a>"
-    		html += "<p class='text-center'><b id='name'>" + name + "</b><span class='counter'>" + contributions + " total</span></p>";
-			html += "<p class='right'><strong>" + score + "</strong> pt</p>";
+			html += "<span class='avatar avatar-child counter' width='10' height='10'>" + e(i) + "</span></div></a>"
+    		html += "<p class='text-center'><b id='name'>" + e(name) + "</b><span class='counter'>" + e(contributions) + " total</span></p>";
+			html += "<p class='right'><strong>" + e(score) + "</strong> pt</p>";
 
  			$github = $('<li></li>', {
  				addClass: 'menu-item github ' + id,
@@ -40,5 +40,9 @@ $(function() {
  			$github.appendTo("#githubs").hide().fadeIn(1000);
  		});
     });
+
+    var e = function(str) {
+        return escape(str);
+    }
 
 });
