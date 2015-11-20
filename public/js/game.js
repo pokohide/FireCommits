@@ -310,11 +310,10 @@ var ClearScene = function() {
     var tweet_btn = new Sprite(114, 40);
     tweet_btn.image = game.assets['../images/tweet.png'];
     tweet_btn.addEventListener('touchstart', function() {
-        var EUC = encodeURIComponent;
-        var twitter_url = "http://twitter.com/?status=";
-        var message = "あなたのスコアは" + game.score + " ptです。 \nhttps://fire-commits.herokuapp.com/\n#FireCommits";
-        // Twitter に移動
-        location.href = twitter_url+ EUC(message);
+        var twitter_url = "http://twitter.com/share?url=https://fire-commits.herokuapp.com&text=";
+        twitter_url += EUC("あなたのスコアは " + game.score + " ptです。");
+        twitter_url += "&hashtags=FireCommits";
+        window.open(twitter_url, '_blank');
     });
     tweet_btn.moveTo((ScreenWidth - 114)/2, ScreenCenterY + 50);
     playingGame.addChild(tweet_btn);
@@ -354,13 +353,15 @@ var GameOverScene = function() {
     tweet_btn.image = game.assets['../images/tweet.png'];
     tweet_btn.addEventListener('touchstart', function() {
         var EUC = encodeURIComponent;
-        var twitter_url = "http://twitter.com/?status=";
-        var message = "あなたのスコアは" + game.score + " ptです。 \nhttps://fire-commits.herokuapp.com/\n#FireCommits";
-        // Twitter に移動
-        location.href = twitter_url+ EUC(message);
+        var twitter_url = "http://twitter.com/share?url=https://fire-commits.herokuapp.com&text=";
+        twitter_url += EUC("あなたのスコアは " + game.score + " ptです。");
+        twitter_url += "&hashtags=FireCommits";
+        window.open(twitter_url, '_blank');
     });
     tweet_btn.moveTo((ScreenWidth - 114)/2 , ScreenCenterY + 60);
     playingGame.addChild(tweet_btn);
+
+]
 
 
     /* 今回のレコード */
