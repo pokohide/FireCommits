@@ -24,7 +24,7 @@ $(function() {
     		,	contributions = datum.count
     		,	score = datum.score;
 
-    		var html = "<img class='avatar left' src='" + image + "' width='40' height='40'>";
+    		var html = "<a href='https://github.com/" + name + "' target='_blank'><img class='avatar left' src='" + image + "' width='40' height='40'></a>";
     		html += "<p class='text-center'><b id='name'>" + name + "</b><span class='counter'>" + contributions + " total</span></p>";
 			html += "<p class='right'><strong>" + score + "</strong> pt</p>";
 
