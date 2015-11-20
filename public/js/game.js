@@ -344,7 +344,7 @@ var GameOverScene = function() {
     html += "<p class='right'><strong>" + record.score + "</strong> pt</p>";
 
     /* もしランキング内の5人もいなければ */
-    if(ranking.length < 5){
+    if(ranking.length < 30){
         rankDS.push(record, function(err, datum) {
             record.id = datum.id;
             ranking.push(record);

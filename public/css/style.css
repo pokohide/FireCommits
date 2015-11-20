@@ -118,6 +118,10 @@ ul.circle_group{
 .user {
 	margin-bottom: 10px;
 }
+.menu {
+	height: 340px;
+	overflow: scroll;
+}
 .github {
 	height: 60px;
 	border-bottom: 1px dotted gray;
