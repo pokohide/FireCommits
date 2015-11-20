@@ -404,7 +404,7 @@ window.onload = function() {
 
 
     ranking = [];
-    rankDS.stream().size(5).sort('desc').next(function(err, data) {
+    rankDS.stream().size(30).sort('desc').next(function(err, data) {
         data.forEach(function(datum) {
             id = datum.id;
             datum = datum.value;
