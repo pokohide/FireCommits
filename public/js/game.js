@@ -361,8 +361,6 @@ var GameOverScene = function() {
     tweet_btn.moveTo((ScreenWidth - 114)/2 , ScreenCenterY + 60);
     playingGame.addChild(tweet_btn);
 
-]
-
 
     /* 今回のレコード */
     record = {};
