@@ -151,7 +151,6 @@ var PlayerShoot = enchant.Class.create(Shoot, {
                     if(--enemies[i].life === 0){
                         enemies[i].remove();
                         /* 敵が全滅したら */
-                        console.log(eneNum);
                         eneNum--;
                         if(eneNum == 0) {
                             setTimeout(function(){
@@ -239,6 +238,7 @@ var GameScene = function(next) {
 
     /* ゲームシーンはルートシーン上に */
     game.replaceScene(playingGame);
+    game.frame = 0;
 
     /* プレイヤーを生成 */
     player = new Player(ScreenCenterX, ScreenHeight - 40);
