@@ -1,4 +1,3 @@
-require('newrelic');
 var express = require('express')
 ,	https = require('https')
 ,	parseString = require('xml2js').parseString
