@@ -338,47 +338,49 @@ var GameOverScene = function() {
     record.image = $('.image').text();
     record.count = parseInt($('.count').text());
     record.score = game.score;
-    console.log(record);
 
+    var html = "<img class='avatar left' src='" + record.image + "' width='40' height='40'>";
+    html += "<p class='text-center'><b id='name'>" + record.name + "</b><span class='counter'>" + record.count + " total</span></p>";
+    html += "<p class='right'><strong>" + record.score + "</strong> pt</p>";
+
+    /* もしランキング内の5人もいなければ */
     if(ranking.length < 5){
-        console.log('ok');
-        rankDS.push(record);
+        rankDS.push(record, function(err, datum) {
+            record.id = datum.id;
+            ranking.push(record);
+        });
+        $github = $('<li></li>', {
+            addClass: 'menu-item github ' + id,
+            id: 'github',
+            html: html
+        });
+        $github.appendTo("#githubs").hide().fadeIn(1000);
     } else {
-
+        /* もしランキング内の一番スコアの低いものより今回のスコアが高ければそのレコードを塗り替える */
+        var id = insertRec(ranking, record);
+        if( id != 0 ){
+            rankDS.set(id[0], record, function(err, datum) {
+                record.id = datum.id;
+                ranking[id[1]] = record;
+            });
+            $("." + id).html(html);
+            $("." + id).fadeOut(500,function(){$(this).fadeIn(500)});
+        }
     }
 
 
-    /* もしランキング最下位よりも特典が高ければ */
-    // if( parseInt( ranking[ranking.length - 1][3] ) < game.score ){
 
-    //     ranking.push([name, image, count, game.score]);
-    //     /* ゲーム結果がランキングに入るのなら追加 */
-    //     ranking.sort(function(a,b) {
-    //         if(parseInt(a[3]) < parseInt(b[3]) ) return -1;
-    //         if(parseInt(a[3]) > parseInt(b[3]) ) return 1;
-    //         return 0;
-    //     });
-
-    //     /* ランキング順に再表示 */
-    //     for(var i in ranking) {
-    //         var name = ranking[i][0],   image = ranking[i][1],  count = ranking[i][2],  score = ranking[i][3];
-    //         var html = "<img class='avatar left' src='" + image + "' width='40' height='40'>";
-    //         html += "<p class='text-center'><b id='name'>" + name + "</b><span class='counter'>" + count + " total</span></p>";
-    //         html += "<p class='right'><strong>" + score + "</strong> pt</p>";
-
-    //         $github = $('<li></li>', {
-    //             addClass: 'menu-item github',
-    //             id: 'github',
-    //             html: html
-    //         });
-    //         $github.appendTo($('#githubs')).hide().fadeIn(1000);
-    //     }
-    // }
 };
 
-/* 今回のレコードをランキングに挿入 */
-var insertSort = function(ranking, record) {
-
+/* ランキング下位のスコアより高ければその下位のidを返す */
+var insertRec = function(ranking, record) {
+    var minRec = ranking[0];
+    var minI = 0;
+    for(var i in ranking) {
+        if( minRec.score > ranking[i].score ) minRec = ranking[i]; minI = i;
+    }
+    if( minRec.score < record.score ) return [minRec.id, minI];
+    return 0;
 };
 
 /*

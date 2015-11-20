@@ -1,7 +1,7 @@
 $(function() {
 
 	/* githubをクリックしたら */
-	$(document).on('click', '#github', function() {
+	$(document).on('click', '.github', function() {
 		var name = $(this).find('#name').text();
 		$('#username').val(name);
 	});
@@ -12,11 +12,12 @@ $(function() {
 	var ranking;
     milkcocoa.dataStore('ranking').stream().size(5).sort('desc').next(function(err, data) {
     	data.sort(function(a,b) {
-    		if(a.value.score < b.value.score) return -1;
-    		if(a.value.score > b.value.score) return 1;
+    		if(a.value.score < b.value.score) return 1;
+    		if(a.value.score > b.value.score) return -1;
     		return 0;
     	});
     	data.forEach(function(datum) {
+    		var id = datum.id;
     		datum = datum.value;
     		var name = datum.name
     		,	image = datum.image
@@ -28,7 +29,7 @@ $(function() {
 			html += "<p class='right'><strong>" + score + "</strong> pt</p>";
 
  			$github = $('<li></li>', {
- 				addClass: 'menu-item github',
+ 				addClass: 'menu-item github ' + id,
  				id: 'github',
  				html: html
  			});
