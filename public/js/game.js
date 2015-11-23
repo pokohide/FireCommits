@@ -67,6 +67,7 @@ var Player = enchant.Class.create(enchant.Sprite, {
         enchant.Sprite.call(this, 50, 20);
         this.image = game.assets['../images/player' + playID + '.png'];     // 画像を読み込む
         this.x = x; this.y = y; this.frame = 0; this.life = 3;
+        this.invincible = false;
 
         var s = new PlayerShoot(x, y);
         this.addEventListener('enterframe', function(){
@@ -177,13 +178,14 @@ var EnemyShoot = enchant.Class.create(Shoot, {
         Shoot.call(this, x, y, 0);
         this.addEventListener('enterframe', function() {    // プレイヤーに当たったらゲームオーバーに
             // if(player.within(this, 8)) { 
-            if(player.intersect(this)) {
+            if(player.intersect(this) && !player.invincible) {
                 this.remove();
                 if(player.life-- == 0){
                     GameOverScene();
                     game.pause();
                 } else {
                     lifes[player.life].remove();
+                    invincible();
                 }
             }
 
@@ -197,6 +199,30 @@ var EnemyShoot = enchant.Class.create(Shoot, {
         })
     }
 });
+
+/* 無敵時間(1s) */
+var invincible = function() {
+    /* 無敵状態に */
+    player.invincible = true;
+    player.opacity = 0.5;
+    setTimeout(function() {
+        player.opacity = 1;
+        setTimeout(function() {
+            player.opacity = 0.5;
+            setTimeout(function() {
+                player.opacity = 1;
+                setTimeout(function() {
+                    player.opacity = 0.5;
+                    setTimeout(function() {
+                        player.opacity = 1;
+                        player.invincible = false;
+                    }, 200);
+                }, 200);
+            }, 200);
+        }, 200);
+    }, 200);
+};
+
 
 /* タイトルシーン */
 var PushTitleScene = function() {
@@ -255,7 +281,6 @@ var GameScene = function(next) {
             enemy.key = i; enemies[enemy.key] = enemy;  i++;
         })
         eneNum = i;
-        console.log(eneNum);
     };
 
     barriered = false;
