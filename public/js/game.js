@@ -66,18 +66,19 @@ var Player = enchant.Class.create(enchant.Sprite, {
     initialize: function(x, y) {
         enchant.Sprite.call(this, 50, 20);
         this.image = game.assets['../images/player' + playID + '.png'];     // 画像を読み込む
-        this.x = x; this.y = y; this.frame = 0; this.life = 3;
+        this.x = x; this.y = y; this.frame = 0; this.life = 3; this.shotSpeed = 10; this.rate = 8;
         this.invincible = false;
 
         var s = new PlayerShoot(x, y);
         this.addEventListener('enterframe', function(){
             /* 8フレームごとに発射 */
-            if(game.frame % 8 == 0){ 
-                var s = new PlayerShoot(player.x + 20, player.y - 10); 
+            if(game.frame % this.rate == 0){ 
+                var s = new PlayerShoot(player.x + 20, player.y - 10, player.shotSpeed); 
             }
             if( this.x < 0 ) this.x = 0;
-            if( this.x + 50 > ScreenWidth) this.x = ScreenWidth - 50;
-            if( this.y + 30 > ScreenHeight) this.y = ScreenHeight - 30;
+            if( this.x + 50 > ScreenWidth ) this.x = ScreenWidth - 50;
+            if( this.y + 30 > ScreenHeight ) this.y = ScreenHeight - 30;
+            if( this.y < 0 ) this.y = 0;
 
             if (sumaho && pad.isTouched) {
                 this.x += pad.vx * 12;
@@ -123,7 +124,7 @@ var Life = enchant.Class.create(enchant.Sprite, {
 
 /* 弾を定義 */
 var Shoot = enchant.Class.create(enchant.Sprite, {
-    initialize: function(x, y, direction) {
+    initialize: function(x, y, direction, speed) {
         enchant.Sprite.call(this, 10, 10);
         /* 自機と敵機で弾を変える */
         if( direction > 0) {
@@ -132,7 +133,7 @@ var Shoot = enchant.Class.create(enchant.Sprite, {
             this.image = game.assets['../images/enemyshot.png'];
         }
         this.x = x; this.y = y; this.frame = 1;
-        this.direction = direction; this.moveSpeed = 10;
+        this.direction = direction; this.moveSpeed = speed || 10;
         this.addEventListener('enterframe', function() {    // 弾をまいフレーム動かす
             this.x += this.moveSpeed * Math.sin(this.direction);
             this.y += this.moveSpeed * Math.cos(this.direction);
@@ -147,13 +148,20 @@ var Shoot = enchant.Class.create(enchant.Sprite, {
 
 /* プレイヤーの弾を定義 */
 var PlayerShoot = enchant.Class.create(Shoot, {
-    initialize: function(x, y){
-        Shoot.call(this, x, y, Math.PI);
+    initialize: function(x, y, speed){
+        Shoot.call(this, x, y, Math.PI, speed || 10);
         this.addEventListener('enterframe', function() {
             for(var i in enemies) {
                 if(enemies[i].intersect(this)) {
                     this.remove();
-                    game.score += getScore(enemies[i].color, enemies[i].count);
+                    game.score += getScore(enemies[i].color, enemies[i].count) * game.scoreup;
+
+                    /* 1/40の確率でアイテムを */
+                    //if( rand(40) == 0){
+                    //    console.log('ss');
+                    //    SpeedUp(enemies[i].x, enemies[i].y);
+                    //}
+
                     /* 草に当たったら色が変わってライフが減る。ライフが0になれば、死ぬ */
                     if(--enemies[i].life === 0){
                         enemies[i].remove();
@@ -163,7 +171,7 @@ var PlayerShoot = enchant.Class.create(Shoot, {
                             setTimeout(function(){
                                 ClearScene(); game.pause();
                             },1000);
-                            game.score += 10000;
+                            game.score += 10000 * game.scoreup;
                         }
                     } else {
                         var surface = new Surface(11, 11);
@@ -180,8 +188,8 @@ var PlayerShoot = enchant.Class.create(Shoot, {
 
 /* 敵の弾を定義 */
 var EnemyShoot = enchant.Class.create(Shoot, {
-    initialize: function(x, y) {
-        Shoot.call(this, x, y, 0);
+    initialize: function(x, y, speed) {
+        Shoot.call(this, x, y, 0, speed || 10);
         this.addEventListener('enterframe', function() {    // プレイヤーに当たったらゲームオーバーに
             // if(player.within(this, 8)) { 
             if(player.intersect(this) && !player.invincible) {
@@ -194,7 +202,6 @@ var EnemyShoot = enchant.Class.create(Shoot, {
                     invincible();
                 }
             }
-
             if(barriered && barrier.intersect(this)) {
                 this.remove();
                 if( barrier.life-- == 0 ){
@@ -205,6 +212,68 @@ var EnemyShoot = enchant.Class.create(Shoot, {
         })
     }
 });
+
+/* アイテムを定義 */
+var Item = enchant.Class.create(enchant.Sprite, {
+    initialize: function(x, y, type) {
+        enchant.Sprite.call(this, 20, 20);
+        images = { 'doubleP': '../images/doubleup.png', 'star': '../images/star.png', 'speedup': '../images/speedup.png'};
+        image = images[type];
+        this.image = game.assets[image];
+
+        this.x = x; this.y = y; this.frame = 1;
+        this.direction = 0; this.moveSpeed = 6; this.type = type;
+
+        this.addEventListener('enterframe', function() {
+            this.x += this.moveSpeed * Math.sin(this.direction);
+            this.y += this.moveSpeed * Math.cos(this.direction);
+            if(this.y > ScreenHeight || this.x > ScreenWidth || this.x < -this.width || this.y < -this.height){
+                this.remove();
+            }
+        });
+        playingGame.addChild(this);
+    },
+    remove: function(){ playingGame.removeChild(this); delete this; }
+});
+
+/* SpeedUP */
+var SpeedUp = enchant.Class.create(Item, {
+    initialize: function(x, y) {
+        Item.call(this, x, y, 'speedup');
+        this.addEventListener('enterframe', function() {
+            if( player.intersect(this) ) {
+                this.remove();
+                /* 2秒間,弾速が2倍に */
+                player.shotSpeed *= 2;  player.rate /= 2;
+                setTimeout(function() {
+                    player.shotSpeed /= 2;  player.rate *= 2;
+                }, 2000);
+            }
+        });
+    }
+});
+
+/* doubleP */
+var DoubleP = enchant.Class.create(Item, {
+    initialize: function(x, y) {
+        Item.call(this, x, y, 'doubleP');
+        this.addEventListener('enterframe', function() {
+            if( player.intersect(this) ) {
+                this.remove();
+                /* 5秒間獲得ポイントが2倍に */
+                game.scoreup *= 2;
+                setTimeout(function() {
+                    game.scoreup /= 2;
+                }, 5000);
+            }
+        });
+    }
+});
+
+/*  */
+
+
+
 
 /* 無敵時間(1s) */
 var invincible = function() {
@@ -275,6 +344,7 @@ var GameScene = function(next) {
     /* ゲームシーンはルートシーン上に */
     game.replaceScene(playingGame);
     game.frame = 0;
+    game.scoreup = 1;
 
     sumaho = false;
     // スマホならバーチャルキーパッドを生成
@@ -495,7 +565,7 @@ window.onload = function() {
 
     game = new Game(ScreenWidth, ScreenHeight);
     /* game設定 */
-    game.preload(['../images/player0.png', '../images/player1.png', '../images/player2.png', '../images/player3.png', '../images/player4.png', '../images/player5.png', '../images/shot0.png', '../images/shot1.png', '../images/shot2.png', '../images/shot3.png', '../images/shot4.png', '../images/shot5.png', '../images/enemy.png', '../images/enemyshot.png', '../images/life.png', '../images/tweet.png', image]);
+    game.preload(['../images/player0.png', '../images/player1.png', '../images/player2.png', '../images/player3.png', '../images/player4.png', '../images/player5.png', '../images/shot0.png', '../images/shot1.png', '../images/shot2.png', '../images/shot3.png', '../images/shot4.png', '../images/shot5.png', '../images/enemy.png', '../images/enemyshot.png', '../images/life.png', '../images/tweet.png', '../images/speedup.png', '../images/doubleup.png', image]);
     game.score = 0;
     game.fps = 24;
     game.started = false;
