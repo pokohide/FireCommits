@@ -18,17 +18,21 @@
 
 
 ## 技術スタック
-- node.js
-- enchant.js
-- jQuery
+- node.js(server)
+- enchant.js(client)
+- jQuery(client)
+- milkcocoa(datastore)
+- heroku(PaaS)
 
 ## 追記
 まだ未完成。以下、今後修正予定。
 - ランキング蘭はランキングの役割を果たしていない。(解決)
 - 変なアカウント名を入力したら落ちちゃう。。(解決?)
-- 終わったらスコアとか呟きたい
-- 草を全部打ち終わったクリア画面の未実装 
+- 終わったらスコアとか呟きたい(解決)
+- 草を全部打ち終わったクリア画面の未実装(解決) 
 - プレイヤーによって打ち方を変えたい
+- スマホに対応(解決。ただし重たいし、UIくそ)
+- 撃たれた時の無敵時間(解決 1s)
 
 ## Author
 [@hyde2able][https://github.com/hyde2able]
