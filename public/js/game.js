@@ -296,6 +296,11 @@ var GameScene = function(next) {
 
     });
 
+        // バーチャルキーパッドを生成
+    var pad = new Pad();
+    pad.moveTo(0, ScreenHeight - 100);
+    playingGame.addChild(pad);
+
     /* スコア */
     var score = new Label();
     score.moveTo()

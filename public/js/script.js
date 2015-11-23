@@ -6,6 +6,15 @@ $(function() {
 		$('#username').val(name);
 	});
 
+    /* flashメッセージは300sで消す */
+    setTimeout( function() {
+    $('.flash').each( function(idx, element) {
+         setTimeout( function(){
+            $(element).fadeOut('slow');
+         }, 400 * idx);
+        });
+  }, 3000);
+
 
 
 	var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');

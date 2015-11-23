@@ -24,7 +24,8 @@
     <!&#91;endif&#93;-->
 
     <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="js/enchant.js"></script> 
+    <script type="text/javascript" src="js/enchant.js"></script>
+    <script type="text/javascript" src="js/ui.enchant.js"></script> 
     <script type="text/javascript" src="js/game.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
     <script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
@@ -49,6 +50,16 @@
     			<div class="one-half centered column">
     				<a href="/"><img src="images/logo.png"></a>
     			</div>
+
+                <div class="four-fifths centered column">
+                    <div class="messages">
+                        <% if(!ok) { %>
+                            <div class="flash flash-warn">
+                                GitHubを入力してください。
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
 
 	    		<div class="three-fourths column">
     				<div class="game">
