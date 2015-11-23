@@ -77,10 +77,11 @@ var Player = enchant.Class.create(enchant.Sprite, {
             }
             if( this.x < 0 ) this.x = 0;
             if( this.x + 50 > ScreenWidth) this.x = ScreenWidth - 50;
+            if( this.y + 30 > ScreenHeight) this.y = ScreenHeight - 30;
 
-            if (pad.isTouched) {
-                this.x += pad.vx * 8;
-                this.y += pad.vy * 8;
+            if (sumaho && pad.isTouched) {
+                this.x += pad.vx * 12;
+                this.y += pad.vy * 12;
             }
         });
         playingGame.addChild(this);
@@ -275,10 +276,14 @@ var GameScene = function(next) {
     game.replaceScene(playingGame);
     game.frame = 0;
 
-    // バーチャルキーパッドを生成
-    pad = new APad();
-    pad.moveTo(30, ScreenHeight - 100);
-    playingGame.addChild(pad);
+    sumaho = false;
+    // スマホならバーチャルキーパッドを生成
+    if (navigator.userAgent.indexOf('iPhone') > 0 || navigator.userAgent.indexOf('iPad') > 0 || navigator.userAgent.indexOf('iPod') > 0 || navigator.userAgent.indexOf('Android') > 0) {
+        pad = new APad();
+        pad.moveTo(30, ScreenHeight - 150);
+        playingGame.addChild(pad);
+        sumaho = true;
+    }
 
     /* プレイヤーを生成 */
     player = new Player(ScreenCenterX, ScreenHeight - 40);
