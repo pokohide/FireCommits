@@ -124,7 +124,7 @@ enchant.ui.APad = enchant.Class.create(enchant.Group, {
      */
     initialize: function(mode) {
         var core = enchant.Core.instance;
-        var image = core.assets['apad.png'];
+        var image = core.assets['../images/apad.png'];
         var w = this.width = image.width;
         var h = this.height = image.height;
         enchant.Group.call(this);
