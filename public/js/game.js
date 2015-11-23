@@ -251,10 +251,14 @@ var PushTitleScene = function() {
     TitleScene.addChild(usage3);
 
     game.keybind(32, 'space');      // spaceを割り当てる
-    // スペースをクリックしたらゲーム開始
+
+    // スペースかタッチしたらゲーム開始
     TitleScene.addEventListener('spacebuttondown', function() {
         GameScene();
     });
+    TitleScene.addEventListener('touchstart', function() {
+        GameScene();
+    })
 };
 
 /* ゲームシーン */
@@ -341,16 +345,12 @@ var ClearScene = function() {
     tweet_btn.image = game.assets['../images/tweet.png'];
     tweet_btn.addEventListener('touchstart', function() {
         var twitter_url = "http://twitter.com/share?url=https://fire-commits.herokuapp.com&text=";
-        twitter_url += EUC("あなたのスコアは " + game.score + " ptです。");
+        twitter_url += EUC("あなたのスコアは " + game.score + " ptで、クリア時間は " + parseInt(game.frame / game.fps) + "です。");
         twitter_url += "&hashtags=FireCommits";
         window.open(twitter_url, '_blank');
     });
     tweet_btn.moveTo((ScreenWidth - 114)/2, ScreenCenterY + 50);
     playingGame.addChild(tweet_btn);
-
-
-
-
 };
 
 /* ゲームオーバーシーン */
@@ -370,14 +370,12 @@ var GameOverScene = function() {
     game.keybind(32, 'space');      // spaceを割り当てる
     // スペースをクリックしたらゲーム開始
     playingGame.addEventListener('spacebuttondown', function() {
-        /* 自機、敵機を全て削除・初期化 */
-        player.remove();
-        enemies = [];
-        for(var i in enemies){ enemies[i].remove(); }
-        game.frame = 0; game.score = 0;
-        GameScene();
-        game.resume();
+        ResetGame();
     });
+    playingGame.addEventListener('touchstart', function() {
+        ResetGame();
+    });
+
 
     var tweet_btn = new Sprite(114, 40);
     tweet_btn.image = game.assets['../images/tweet.png'];
@@ -429,13 +427,21 @@ var GameOverScene = function() {
             $("." + id).fadeOut(500,function(){$(this).fadeIn(500)});
         }
     }
-
-
-
 };
 var e = function(str) {
     return escape(str);
 }
+
+/* ゲームをリセット */
+var ResetGame = function(){
+    /* 自機、敵機を全て削除・初期化 */
+    player.remove();
+    for(var i in enemies) enemies[i].remove();
+    enemies = [];
+    game.frame = 0; game.score = 0;
+    GameScene();
+    game.resume();
+};
 
 /* ランキング下位のスコアより高ければその下位のidを返す */
 var insertRec = function(ranking, record) {
