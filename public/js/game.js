@@ -457,6 +457,13 @@ var GameOverScene = function() {
     });
 
 
+    /* 名前を入力してランキングに登録ボタンを押したらランキングに設定 */
+    var input = new Label("<form name='hoge'>" +
+                  "<input type='text' name='text'>" +
+                  "</from>");
+
+
+
     var tweet_btn = new Sprite(114, 40);
     tweet_btn.image = game.assets['../images/tweet.png'];
     tweet_btn.addEventListener('touchstart', function() {
