@@ -484,6 +484,7 @@ var GameOverScene = function() {
     record.count = parseInt($('.count').text());
     record.score = game.score;
 
+
     var html = "<img class='avatar left' src='" + record.image + "' width='40' height='40'>";
     html += "<p class='text-center'><b id='name'>" + e(record.name) + "</b><span class='counter'>" + e(record.count) + " total</span></p>";
     html += "<p class='right'><strong>" + e(record.score) + "</strong> pt</p>";
