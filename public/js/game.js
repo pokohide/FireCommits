@@ -457,6 +457,13 @@ var GameOverScene = function() {
     });
 
 
+    /* 名前を入力してランキングに登録ボタンを押したらランキングに設定 */
+    var input = new Label("<form name='hoge'>" +
+                  "<input type='text' name='text'>" +
+                  "</from>");
+
+
+
     var tweet_btn = new Sprite(114, 40);
     tweet_btn.image = game.assets['../images/tweet.png'];
     tweet_btn.addEventListener('touchstart', function() {
@@ -476,6 +483,7 @@ var GameOverScene = function() {
     record.image = $('.image').text();
     record.count = parseInt($('.count').text());
     record.score = game.score;
+
 
     var html = "<img class='avatar left' src='" + record.image + "' width='40' height='40'>";
     html += "<p class='text-center'><b id='name'>" + e(record.name) + "</b><span class='counter'>" + e(record.count) + " total</span></p>";

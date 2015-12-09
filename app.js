@@ -100,6 +100,7 @@ app.get('/', function(req, res) {
 		return;
 	}
 	var name = req.query.username;
+	name = name.replace(/@/, "");
 
 	getGitHubData(name, function(contributions, image, count, e) {
 		if(e){ res.render('index', {ok: false, message: e.message}); }
