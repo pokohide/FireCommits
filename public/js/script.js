@@ -16,7 +16,7 @@ $(function() {
   }, 3000);
 
 
-    var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
+    var milkcocoa = new MilkCocoa('woodij8ur1m7.mlkcca.com');
 	var ranking;
 
     milkcocoa.dataStore('ranking').stream().size(30).next(function(err, data) {
