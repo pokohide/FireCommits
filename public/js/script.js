@@ -16,10 +16,10 @@ $(function() {
   }, 3000);
 
 
-
-	var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
+    var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
 	var ranking;
-    milkcocoa.dataStore('ranking').stream().size(30).sort('desc').next(function(err, data) {
+
+    milkcocoa.dataStore('ranking').stream().size(30).next(function(err, data) {
     	data.sort(function(a,b) {
     		if(a.value.score < b.value.score) return 1;
     		if(a.value.score > b.value.score) return -1;
