@@ -135,7 +135,7 @@ app.get('/tweet', function(req, res) {
 
 	bot.post('statuses/update',{status: tweet},function( error, tweet, response){
 		if(error){
-			process.stderr.write(error+'\n');
+			console.log(error);
 		}
 	});
 

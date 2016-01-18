@@ -524,6 +524,16 @@ var GameOverScene = function() {
 };
 
 var tweet = function(username, score, no1player, no1score) {
+    var $no1 = $("#github")
+    var $no1 = $("#githubs").first();
+
+    var no1player = $no1.find("#name").text();
+    var no1score = parseInt( $no1.find("#score").text(), 10);
+
+    console.log(no1player);
+    console.log(no1score);
+
+
     $.get("/tweet", {
         score: score,
         url: "https://fire-commits.herokuapp.com",

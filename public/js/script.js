@@ -39,7 +39,7 @@ $(function() {
 			html += "<img class='avatar' src='" + image + "' width='40' height='40'>";
 			html += "<span class='avatar avatar-child counter' width='10' height='10'>" + e(i) + "</span></div></a>"
     		html += "<p class='text-center'><b id='name'>" + e(name) + "</b><span class='counter'>" + e(contributions) + " total</span></p>";
-			html += "<p class='right'><strong>" + e(score) + "</strong> pt</p>";
+			html += "<p class='right'><strong id='score'>" + e(score) + "</strong> pt</p>";
 
  			$github = $('<li></li>', {
  				addClass: 'menu-item github ' + id,
