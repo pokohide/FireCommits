@@ -489,6 +489,12 @@ var GameOverScene = function() {
     html += "<p class='text-center'><b id='name'>" + e(record.name) + "</b><span class='counter'>" + e(record.count) + " total</span></p>";
     html += "<p class='right'><strong>" + e(record.score) + "</strong> pt</p>";
 
+    /* 1/5の確率でつぶやく */
+    var randomInt = Math.floor( Math.random() * 5);
+    if( randomInt == 0) {
+        tweet(record.name, record.score, ranking[0].name, ranking[0].score);
+    };
+
     /* もしランキング内の30人もいなければ */
     if(ranking.length < 30){
         rankDS.push(record, function(err, datum) {
@@ -516,6 +522,27 @@ var GameOverScene = function() {
         }
     }
 };
+
+var tweet = function(username, score, no1player, no1score) {
+    var $no1 = $("#github")
+    var $no1 = $("#githubs").first();
+
+    var no1player = $no1.find("#name").text();
+    var no1score = parseInt( $no1.find("#score").text(), 10);
+
+    console.log(no1player);
+    console.log(no1score);
+
+
+    $.get("/tweet", {
+        score: score,
+        url: "https://fire-commits.herokuapp.com",
+        username: username,
+        no1player: no1player,
+        no1score: no1score
+    });
+};
+
 var e = function(str) {
     return escape(str);
 }

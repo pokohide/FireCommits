@@ -2,8 +2,10 @@ require('newrelic');
 var express = require('express')
 ,	https = require('https')
 ,	parseString = require('xml2js').parseString
+,	config = require('config')
 ,	async = require('async')
 ,	client = require('cheerio-httpcli')
+,	twitter = require('twitter')
 ,	app = express();
 
 
@@ -11,6 +13,14 @@ var express = require('express')
 var MilkCocoa = require('milkcocoa');
 var milkcocoa = new MilkCocoa('woodij8ur1m7.mlkcca.com');
 var ds = milkcocoa.dataStore("ranking");	// dataStore作成
+
+//////////////////  Twitter  ////////////////
+var bot = new twitter( {
+	consumer_key: config.get('twitter.consumer_key'),
+	consumer_secret: config.get('twitter.consumer_secret'),
+	access_token_key: config.get('twitter.access_token_key'),
+	access_token_secret: config.get('twitter.access_token_secret')
+});
 
 /* appの設定 */
 app.set('port', process.env.PORT || 4000);
@@ -109,6 +119,27 @@ app.get('/', function(req, res) {
 
 
 	return;
+});
+
+app.get('/tweet', function(req, res) {
+	var score = req.query.score;
+	var url = req.query.url;
+	var username = req.query.username;
+
+	var no1player = req.query.no1player;
+	var no1score = req.query.no1score;
+
+	var tweet = url + '  FireCommits エンジニアのための草刈機\n';
+	tweet += username + 'でプレイしてスコアは' + score + 'ptでした。\n';
+	tweet += '現在のFireCommitsのトップは' + no1player + 'さんで' + no1score + 'ptです。\n';
+
+	bot.post('statuses/update',{status: tweet},function( error, tweet, response){
+		if(error){
+			console.log(error);
+		}
+	});
+
+
 });
 
 
