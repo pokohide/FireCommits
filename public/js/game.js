@@ -492,7 +492,7 @@ var GameOverScene = function() {
     /* 1/5の確率でつぶやく */
     var randomInt = Math.floor( Math.random() * 5);
     if( randomInt == 0) {
-        tweet(record.name, record.score, ranking[0].name, ranking[0].score);
+        tweet(record.name, record.score);
     };
 
     /* もしランキング内の30人もいなければ */
@@ -523,16 +523,12 @@ var GameOverScene = function() {
     }
 };
 
-var tweet = function(username, score, no1player, no1score) {
+var tweet = function(username, score) {
     var $no1 = $("#github")
     var $no1 = $("#githubs").first();
 
     var no1player = $no1.find("#name").text();
     var no1score = parseInt( $no1.find("#score").text(), 10);
-
-    console.log(no1player);
-    console.log(no1score);
-
 
     $.get("/tweet", {
         score: score,
