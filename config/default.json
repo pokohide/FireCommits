@@ -1,5 +1,11 @@
 {
   "milkcocoa": {
     "appid": "readih652j8r"
+  },
+  "twitter": {
+    "consumer_key": "5eqdPDBAACHC8BGNGsyztWR6n",
+    "consumer_secret": "pLvg9HgkYRsCbYR7Hzq4HttbNEHXjbP03yN4gUyglwatzMLaji",
+    "access_token_key": "4824323464-4ph0hB2QrzepkCuJn5twDQA60Jvi6QHVF7lMxHV",
+    "access_token_secret": "S1MTcBymvy1Aa3dYMkxyLdjPm57KOhY1DMZLBenQBF1Ro"
   }
 }
