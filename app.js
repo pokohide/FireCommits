@@ -9,7 +9,7 @@ var express = require('express')
 
 //////////////////  MilkCocoa ////////////////
 var MilkCocoa = require('milkcocoa');
-var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
+var milkcocoa = new MilkCocoa('woodij8ur1m7.mlkcca.com');
 var ds = milkcocoa.dataStore("ranking");	// dataStore作成
 
 /* appの設定 */

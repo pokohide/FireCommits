@@ -552,12 +552,12 @@ window.onload = function() {
     name = $('.name').text();
     count = $('.count').text();
 
-    var milkcocoa = new MilkCocoa('readih652j8r.mlkcca.com');
+    var milkcocoa = new MilkCocoa('woodij8ur1m7.mlkcca.com');
     var history = milkcocoa.dataStore('history');
     rankDS = milkcocoa.dataStore('ranking');
-    milkcocoa.dataStore('history').stream().sort('desc').next(function(err, data) {
+    //milkcocoa.dataStore('history').stream().sort('desc').next(function(err, data) {
         // console.log(data); // 古い方から10件のデータ
-    });
+    //});
     // if(name) history.push({name: name, image: image, count: count});
 
     ranking = [];

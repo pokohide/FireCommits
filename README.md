@@ -41,6 +41,8 @@
 - スマホに対応(解決。ただし重たいし、UIくそ)
 - 撃たれた時の無敵時間(解決 1s)
 
+2015/11
+
 ## Author
 
 [@pokohide](https://twitter.com/pokohide)
